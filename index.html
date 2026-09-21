@@ -1,123 +1,78 @@
 <!DOCTYPE html>
-<html lang = "ja">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
-    <meta name="description" 
-          content="Game Programmer Portfolio">
-    <title>Game Programmer Portfolio</title>
-    <link rel = "preconnect" href = "https://fonts.googleapis.com">
-    <link rel = "preconnect" href = "https://fonts.gstatic.com" crossorigin>
-    <link href = "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel = "stylesheet">
-    <link rel = "stylesheet" href = "style.css">
-  </head>
-
-  <body>
-    <header class = "site-header">
-      <div class = "wrap header-inner">
-        <a class = "Logo" href = "#top">My Name's Portfolio</a>
-        <nav class = "nav " aria-label = "Primary">
-          <a href = "#profile">Profile</a>
-          <a href = "#skills">Skills</a>
-          <a href = "#works">Works</a>
-          <a href = "#about">About</a>
-          <a href = "#contact">Contact</a>
-        </nav>
-        <!--
-        <button class = "nav-toggle" aria-expanded = "false" aria-controls = "nav-panel">
-          Menu
-        </button>
-        --->
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="横山晴紀のゲームエンジニア・ポートフォリオ。プロフィール、使用技術、制作作品と開発への考え方を紹介します。">
+  <meta name="theme-color" content="#ffffff">
+  <title>Haruki Yokoyama — Game Engineer Portfolio</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="data/works.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">本文へスキップ</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#hero" aria-label="Haruki Yokoyama トップへ"><span class="brand-mark">hy<span>.</span></span><span class="brand-caption">HARUKI YOKOYAMA<br>GAME ENGINEER</span></a>
+      <nav class="nav" aria-label="各セクションへ">
+        <a href="#hero" aria-current="location">Home</a><a href="#profile">Profile</a><a href="#skill">Skill</a><a href="#works">Works</a><a href="#about">About</a><a href="#contact">Contact <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+    <div class="reading-progress" aria-hidden="true"></div>
+  </header>
+  <main id="main">
+    <section class="hero wrap" id="hero" aria-labelledby="hero-title">
+      <span class="ring hero-ring-one" aria-hidden="true"></span><span class="ring hero-ring-two" aria-hidden="true"></span>
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="accent-dash"></span> GAME ENGINEER</p>
+        <h1 id="hero-title">Portfolio<span class="title-dot">.</span></h1>
+        <p class="hero-catch">「遊ぶ」の楽しさを、<br>「つくる」技術で。</p>
+        <div class="hero-name"><span>横山 晴紀</span><span class="roman-name">HARUKI YOKOYAMA</span></div>
+        <a class="text-link" href="#works">作品を見る <span class="circle-arrow" aria-hidden="true">↗</span></a>
       </div>
-    </header>
-
-    <main id = "top">
-      <section id="hero" class = "hero">
-        <div class = "hero-text">
-          <p class = "eyebrow">Game Programmer Portfolio</p>
-          <h1>Yokoyama <br> Haruki</h1>
-          <p class = "lead">Catch Copy</p>
-        </div>
-        <div class="hero-nav">
-          <a href="#profile">Profile</a>
-          <a href="#skills">Skills</a>
-          <a href="#works">Works</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
-        </div>
-      </section>
-
-      <section id="profile" class="section">
-        <div class="wrap">
-          <h1 class="section-head">
-            Profile
-          </h1>
-          <article class="frame profile-card">
-            <div class="frame-inner">
-              <div class = "profile-top">
-                <div class="profile-photo frame">
-                  <img src="profile.jpg" alt="Profile Photo" class="profile-photo">
-                </div>
-                <div class="profile-info">
-                  <h2 class="name">横山 晴紀</h2>
-                  <p> HAL東京<br>ゲーム4年制コースゲーム制作学科</p>
-                  <p> ゲームプログラマー志望</p>
-                  <p> 卒業予定：2028年3月</p>
-                </div>
-              </div>
-              <div class="profile-bottom">
-                <div class="profile-info">
-                  <p>自己紹介文が入ります。</p>
-                  <p>自己紹介文が入ります。</p>
-                  <p>自己紹介文が入ります。</p>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section id="skills" class="section">
-        <div class="wrap">
-          <h1 class="section-head">
-            Skills
-          </h1>
-          <article class = "skill-grid">
-            <div class = "frame skill-card">
-              <div class = "frame-inner">
-                <h2>Programming Languages</h2>
-                <ul class="skill-list">
-                  <li><img src="cpp-icon.png" alt="C++"> C++</li>
-                  <li><img src="csharp-icon.png" alt="C#"> C#</li>
-                  <li><img src="python-icon.png" alt="Python"> Python</li>
-                </ul>
-              </div>
-            </div>
-            <div class = "frame skill-card">
-              <div class = "frame-inner">
-                <h2>Game Engines</h2>
-                <ul class="skill-list">
-                  <li><img src="unity-icon.png" alt="Unity"> Unity</li>
-                  <li><img src="unreal-icon.png" alt="Unreal Engine"> Unreal Engine</li>
-                </ul>
-              </div>
-            </div>
-            <div class = "frame skill-card">
-              <div class = "frame-inner">
-                <h2>Tools & Libraries</h2>
-                <ul class="skill-list">
-                  <li><img src="git-icon.png" alt="Git"> Git</li>
-                  <li><img src="visual-studio-icon.png" alt="Visual Studio"> Visual Studio</li>
-                  <li><img src="blender-icon.png" alt="Blender"> Blender</li>
-                </ul>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-
-    </main>
-  </body>
+      <a class="hero-visual" href="#works" aria-label="制作作品のセクションへ">
+        <div class="visual-topline"><span><i class="status-dot"></i> SELECTED WORKS</span><span>01 — 04</span></div>
+        <img src="assets/work-orbit.svg" alt="浮遊する足場とリングを描いた仮のゲームビジュアル" width="960" height="600" fetchpriority="high">
+        <div class="visual-caption"><span>アイデアを、遊べるかたちに。</span><span class="tiny-label">SAMPLE VISUAL <span aria-hidden="true">↗</span></span></div>
+      </a>
+      <div class="hero-bottom"><span>HAL TOKYO <span class="separator">/</span> CLASS OF 2028</span><a href="#profile">SCROLL TO EXPLORE <span aria-hidden="true">↓</span></a></div>
+    </section>
+    <section class="section wrap" id="profile" aria-labelledby="profile-title">
+      <div class="section-heading reveal"><div><p class="eyebrow"><span class="accent-dash"></span> 01 / PROFILE</p><h2 id="profile-title">はじめまして。</h2></div><span class="section-aside">A LITTLE ABOUT ME</span></div>
+      <div class="profile-layout reveal">
+        <div class="profile-avatar" aria-label="プロフィール写真は準備中"><span class="avatar-ring" aria-hidden="true"></span><span class="avatar-monogram">hy<span>.</span></span><span class="tiny-label">GAME ENGINEER / STUDENT</span></div>
+        <div class="profile-copy"><p class="roman-name">HARUKI YOKOYAMA</p><h3>横山 晴紀</h3><p class="profile-lead">ゲームプログラマーを目指して。</p><p>HAL東京 ゲーム4年制コース ゲーム制作学科に在籍。<br class="desktop-break">ゲーム制作を通して、プログラミングを学んでいます。</p><dl class="profile-facts"><div><dt>所属</dt><dd>HAL東京<br>ゲーム制作学科</dd></div><div><dt>卒業予定</dt><dd>2028年3月</dd></div><div><dt>目指す職種</dt><dd>ゲームプログラマー</dd></div></dl></div>
+      </div>
+    </section>
+    <section class="section wrap skill-section" id="skill" aria-labelledby="skill-title">
+      <div class="section-heading reveal"><div><p class="eyebrow"><span class="accent-dash"></span> 02 / SKILL</p><h2 id="skill-title">つくるための技術。</h2></div><span class="section-aside">MY TOOLBOX</span></div>
+      <div class="skill-table reveal">
+        <div class="skill-row"><div class="skill-category"><span class="skill-number">01</span><h3>Languages<span>プログラミング言語</span></h3></div><div class="skill-items"><span>C++</span><span>C#</span><span>Python</span></div><span class="skill-note">ゲームロジックの基礎</span></div>
+        <div class="skill-row"><div class="skill-category"><span class="skill-number">02</span><h3>Game engines<span>ゲームエンジン</span></h3></div><div class="skill-items"><span>Unity</span><span>Unreal Engine</span></div><span class="skill-note">アイデアを動く体験に</span></div>
+        <div class="skill-row"><div class="skill-category"><span class="skill-number">03</span><h3>Tools & workflow<span>開発環境・ツール</span></h3></div><div class="skill-items"><span>Git</span><span>Visual Studio</span><span>Blender</span></div><span class="skill-note">制作を支える道具</span></div>
+      </div>
+      <p class="section-note reveal">使用経験のある技術を掲載しています。具体的な担当機能は各作品で紹介予定です。</p>
+    </section>
+    <section class="section works-section" id="works" aria-labelledby="works-title">
+      <span class="ring works-ring" aria-hidden="true"></span>
+      <div class="wrap section-heading reveal"><div><p class="eyebrow"><span class="accent-dash"></span> 03 / WORKS</p><h2 id="works-title" class="display-heading">Selected works<span class="title-dot">.</span></h2><p class="section-intro">遊びの体験と、それを支える実装。</p></div><span class="sample-label" id="collection-label">DEMO COLLECTION / 仮作品4件</span></div>
+      <div class="carousel reveal" role="region" aria-roledescription="カルーセル" aria-label="制作作品" tabindex="0">
+        <div class="carousel-stage" id="carousel-stage"></div>
+        <div class="carousel-controls wrap"><p class="drag-hint">DRAG TO EXPLORE <span aria-hidden="true">⟷</span></p><div class="carousel-pagination" id="carousel-pagination" aria-label="作品を選択"></div><div class="carousel-arrows"><button class="circle-button" id="previous-work" aria-label="前の作品">&lt;</button><p class="work-counter"><span id="work-current">01</span><span class="counter-divider">/</span><span id="work-total">04</span></p><button class="circle-button" id="next-work" aria-label="次の作品">&gt;</button></div></div>
+        <p class="sr-only" id="carousel-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      </div>
+      <div class="wrap work-details" id="work-details"></div>
+      <noscript><p class="wrap">作品のカルーセルを見るにはJavaScriptを有効にしてください。</p></noscript>
+    </section>
+    <section class="section wrap about-section" id="about" aria-labelledby="about-title">
+      <div class="section-heading reveal"><div><p class="eyebrow"><span class="accent-dash"></span> 04 / ABOUT</p><h2 id="about-title">これから、つくりたいこと。</h2></div><span class="section-aside">BEHIND THE CODE</span></div>
+      <div class="about-layout reveal"><div class="about-statement"><span class="outline-asterisk" aria-hidden="true">✳</span><h3>遊び心と、<br>技術のあいだ。</h3><p>ゲームづくりで大切にしたいこと。</p><span class="draft-note">以下は紹介文の仮原稿です。</span></div><div class="about-principles"><article><span>01</span><div><h3>触って気持ちいい体験を。</h3><p>入力への反応、キャラクターの動き、画面の変化。小さな手触りまで考えたゲームをつくっていきたいです。</p></div></article><article><span>02</span><div><h3>変化を受け止める設計を。</h3><p>試して、直して、また試す。その繰り返しを支えられるように、機能の役割が分かるコードを目指します。</p></div></article><article><span>03</span><div><h3>「なぜ？」を、その先へ。</h3><p>動いた理由も、動かなかった理由も確かめる。気づきを次の制作に活かしながら、できることを広げていきたいです。</p></div></article></div></div>
+    </section>
+    <section class="section contact-section" id="contact" aria-labelledby="contact-title"><div class="wrap"><div class="section-heading reveal"><div><p class="eyebrow"><span class="accent-dash"></span> 05 / CONTACT</p><h2 id="contact-title">一緒につくる、そのきっかけに。</h2></div></div><div class="contact-content reveal"><p>ご覧いただき、ありがとうございます。<br>制作や技術について、お話しできることを楽しみにしています。</p><div class="contact-links"><div class="contact-row"><span>MAIL</span><span>連絡先は準備中</span><span aria-hidden="true">↗</span></div><div class="contact-row"><span>GITHUB</span><span>公開URLは準備中</span><span aria-hidden="true">↗</span></div></div></div></div></section>
+  </main>
+  <footer class="site-footer wrap"><a class="brand-mark" href="#hero" aria-label="トップへ戻る">hy<span>.</span></a><p>© <span id="copyright-year">2026</span> HARUKI YOKOYAMA</p><a class="back-top" href="#hero">BACK TO TOP <span aria-hidden="true">↑</span></a></footer>
+  <dialog id="work-dialog" class="work-dialog" aria-labelledby="dialog-title"><div class="dialog-toolbar"><span class="tiny-label">WORK / DETAIL</span><button class="circle-button dialog-close" aria-label="作品詳細を閉じる">×</button></div><div id="dialog-content"></div></dialog>
+</body>
 </html>

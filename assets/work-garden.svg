@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#fcfff3"/><stop offset="1" stop-color="#e8f9e9"/></linearGradient><g id="tree"><path d="M0 0v70" stroke="#292b2f" stroke-width="9"/><path d="m-36 12 36-92 36 92z" fill="#3adc48"/><path d="m0-80 36 92H0z" fill="#2ebe3b"/></g></defs>
+  <rect width="960" height="540" fill="url(#bg)"/><circle cx="660" cy="168" r="88" fill="#ffd82c" fill-opacity=".5"/><circle cx="660" cy="168" r="126" fill="none" stroke="#bbf121" stroke-opacity=".5"/>
+  <path d="m215 333 256-148 273 157-256 148z" fill="#bbf121"/><path d="m215 333 273 157v37L215 370z" fill="#71e8da"/><path d="m488 490 256-148v37L488 527z" fill="#3adc48"/>
+  <g fill="none" stroke="#fff" stroke-opacity=".6"><path d="m281 294 273 157m-207-195 273 157m-207-195 273 157M285 374l256-148M351 413l256-148M417 452l256-148"/></g>
+  <path d="m321 342 60-35 191 110-60 35z" fill="#fff" fill-opacity=".8"/><path d="m459 420 62 35 166-96-61-35z" fill="#fff" fill-opacity=".8"/>
+  <use href="#tree" x="357" y="257"/><use href="#tree" x="464" y="229"/><use href="#tree" x="595" y="301"/>
+  <path d="m442 330 54-31 54 31-54 31z" fill="#fff"/><path d="m442 330 54 31v36l-54-31z" fill="#fff"/><path d="m496 361 54-31v36l-54 31z" fill="#c8edc5"/>
+  <path d="m428 325 66-75 70 72-68 39z" fill="#292b2f"/><path d="m494 250 70 72-68 39z" fill="#45484c"/>
+  <g fill="#3adc48"><circle cx="211" cy="215" r="5"/><circle cx="770" cy="273" r="5"/><circle cx="272" cy="442" r="5"/></g>
+  <g font-family="Arial,sans-serif" fill="#292b2f"><text x="38" y="44" font-size="12" letter-spacing="3">GARDEN / 03</text><text x="38" y="492" font-size="11" letter-spacing="3">ROOM TO GROW</text><text x="38" y="512" font-size="8" letter-spacing="2" opacity=".6">CONCEPT VISUAL — SAMPLE PROJECT</text><text x="830" y="500" font-size="9" letter-spacing="2">TAKE YOUR TIME</text></g>
+</svg>

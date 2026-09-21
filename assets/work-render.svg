@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#fff" stroke-opacity=".06"/></pattern><linearGradient id="face" x2="1" y2="1"><stop stop-color="#ffd82c" stop-opacity=".5"/><stop offset="1" stop-color="#ffd82c" stop-opacity=".06"/></linearGradient></defs>
+  <rect width="960" height="540" fill="#292b2f"/><rect width="960" height="540" fill="url(#grid)"/>
+  <g fill="none" stroke="#ffd82c"><circle cx="480" cy="268" r="180" stroke-opacity=".12"/><circle cx="480" cy="268" r="225" stroke-opacity=".08"/>
+    <path d="m480 86 166 96v190l-166 96-166-96V182z" stroke-width="2"/><path d="m314 182 166 96 166-96M480 278v190M480 86v192L314 372m166-94 166 94" stroke-width="1.5"/>
+    <path d="m480 86 166 286-332-190 166 286 166-286-332 190z" stroke-opacity=".35"/><path d="m397 134 166 286M355 158l249 238m-207 24 166-286M355 396l249-238M314 230l332 95M314 277l332 95M314 325l332-95M314 372l332-95" stroke-opacity=".3"/>
+  </g>
+  <path d="m480 86 166 96-166 96-166-96z" fill="url(#face)"/><path d="m480 278 166-96v190l-166 96z" fill="#ffd82c" fill-opacity=".07"/>
+  <g fill="#ffd82c"><circle cx="480" cy="86" r="5"/><circle cx="646" cy="182" r="5"/><circle cx="314" cy="182" r="5"/><circle cx="480" cy="278" r="6"/><circle cx="314" cy="372" r="5"/><circle cx="646" cy="372" r="5"/><circle cx="480" cy="468" r="5"/></g>
+  <g font-family="Arial,sans-serif" fill="#fff"><text x="38" y="44" font-size="12" letter-spacing="3">RENDER / 04</text><text x="38" y="492" font-size="11" letter-spacing="3">BEYOND THE PIXELS</text><text x="38" y="512" font-size="8" letter-spacing="2" opacity=".6">CONCEPT VISUAL — SAMPLE PROJECT</text><text x="779" y="500" font-size="9" letter-spacing="2">EXPLORE THE PIPELINE</text></g>
+  <g font-family="monospace" font-size="10" fill="#ffd82c" opacity=".7"><text x="730" y="210">POSITION.xyz</text><text x="730" y="235">NORMAL.xyz</text><text x="730" y="260">TEXCOORD.uv</text></g>
+</svg>

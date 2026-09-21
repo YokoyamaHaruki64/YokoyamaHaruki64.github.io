@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <linearGradient id="sky" x2="1" y2="1"><stop stop-color="#f2fdff"/><stop offset="1" stop-color="#d9f8fc"/></linearGradient>
+    <linearGradient id="cyan" x2="1" y2="1"><stop stop-color="#0bccfb"/><stop offset="1" stop-color="#71e8da"/></linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#0bccfb" stroke-opacity=".1"/></pattern>
+  </defs>
+  <rect width="960" height="540" fill="url(#sky)"/><rect width="960" height="540" fill="url(#grid)"/>
+  <circle cx="700" cy="190" r="145" fill="none" stroke="#fff" stroke-width="32"/><circle cx="700" cy="190" r="188" fill="none" stroke="#0bccfb" stroke-opacity=".2"/>
+  <g fill="none" stroke="#0bccfb" stroke-opacity=".16"><path d="M0 460 510 165 960 425M0 520 510 225 960 485M150 540 570 298 960 523M290 540 630 344"/><path d="m90 310 405 230m-305-295 514 295m-375-353 610 353"/></g>
+  <g>
+    <path d="m140 341 152-87 150 87-150 88z" fill="#fff"/><path d="m140 341 152 88v48l-152-88z" fill="#83e5f3"/><path d="m292 429 150-88v48l-150 88z" fill="#3ad6dd"/>
+    <path d="m381 267 127-74 130 74-130 75z" fill="#fff"/><path d="m381 267 127 75v96l-127-74z" fill="#a5ecf7"/><path d="m508 342 130-75v96l-130 75z" fill="#3ad6dd"/>
+    <path d="m643 232 97-56 98 56-98 57z" fill="#fff"/><path d="m643 232 97 57v41l-97-56z" fill="#83e5f3"/><path d="m740 289 98-57v41l-98 57z" fill="#3ad6dd"/>
+    <path d="m475 236 34-20 34 20-34 20z" fill="#292b2f"/><path d="m475 236 34 20v-60l-34-20z" fill="#292b2f"/><path d="m509 256 34-20v-60l-34 20z" fill="#000"/><path d="m475 176 34-20 34 20-34 20z" fill="#fff" stroke="#292b2f" stroke-width="2"/>
+  </g>
+  <ellipse cx="737" cy="176" rx="43" ry="62" fill="none" stroke="url(#cyan)" stroke-width="11" transform="rotate(24 737 176)"/>
+  <path d="M327 280Q365 155 450 205" fill="none" stroke="#0bccfb" stroke-width="3" stroke-dasharray="6 9"/>
+  <g fill="#0bccfb"><circle cx="347" cy="152" r="6"/><circle cx="595" cy="147" r="5"/><circle cx="854" cy="352" r="5"/></g>
+  <g fill="#292b2f" font-family="Arial,sans-serif"><text x="38" y="44" font-size="12" letter-spacing="3">ORBIT / 01</text><text x="38" y="492" font-size="11" letter-spacing="3">WORLD IN MOTION</text><text x="38" y="512" font-size="8" letter-spacing="2" opacity=".6">CONCEPT VISUAL — SAMPLE PROJECT</text><text x="808" y="500" font-size="9" letter-spacing="2">START EXPLORING</text></g>
+  <path d="M876 35h44m-22-22v44" stroke="#0bccfb" stroke-width="2"/>
+</svg>
