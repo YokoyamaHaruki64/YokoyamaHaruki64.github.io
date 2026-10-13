@@ -6,7 +6,6 @@
   const stage = document.querySelector("#carousel-stage");
   const carousel = document.querySelector(".carousel");
   const detail = document.querySelector("#work-details");
-  const pagination = document.querySelector("#carousel-pagination");
   const dialog = document.querySelector("#work-dialog");
   const dialogContent = document.querySelector("#dialog-content");
   const previous = document.querySelector("#previous-work");
@@ -14,8 +13,11 @@
   const slots = [];
   let current = 0;
   let target = 0;
-  let preferredDirection = 1;
+  let centerStep = 0;
+  let trackPosition = 0;
+  let trackVelocity = 0;
   let moving = false;
+  let previousFrameTime = 0;
   let gesture = null;
   let suppressClickUntil = 0;
   let dialogClosing = false;
@@ -25,7 +27,8 @@
   const wrapIndex = (index) => ((index % works.length) + works.length) % works.length;
   const number = (value) => String(value).padStart(2, "0");
   const tags = (work) => (work.technologies ?? []).map((technology) => `<span class="tech-tag">${escapeHTML(technology)}</span>`).join("");
-  const sampleLabel = (work) => work.isSample ? "SAMPLE PROJECT / 仮作品" : "PROJECT";
+  const categoryTag = (work) => work.category ? `<p class="work-category">${escapeHTML(work.category)}</p>` : "";
+  const sampleLabel = (work) => work.isSample ? '<p class="sample-note">仮作品</p>' : "";
 
   function safeURL(value, image = false) {
     try {
@@ -38,6 +41,53 @@
     }
   }
 
+  function youtubeVideoId(value) {
+    try {
+      const url = new URL(value);
+      const host = url.hostname.toLowerCase();
+      if (!["youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"].includes(host)) return "";
+
+      let id = "";
+      if (host === "youtu.be") id = url.pathname.split("/").filter(Boolean)[0] ?? "";
+      else if (url.pathname === "/watch") id = url.searchParams.get("v") ?? "";
+      else id = url.pathname.match(/^\/(?:embed|shorts)\/([^/]+)/)?.[1] ?? "";
+
+      return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : "";
+    } catch {
+      return "";
+    }
+  }
+
+  function workMedia(work) {
+    const media = work.media;
+    const imageURL = safeURL(work.image, true) || "assets/work-placeholder.svg";
+    const imageAlt = escapeHTML(work.imageAlt || work.title);
+    const title = escapeHTML(work.title);
+
+    if (media?.type === "video") {
+      const source = safeURL(media.src, true);
+      if (source) {
+        return `<video class="dialog-video" src="${escapeHTML(source)}" poster="${escapeHTML(imageURL)}" controls playsinline preload="metadata" aria-label="${title} の動画"></video>`;
+      }
+    }
+
+    if (media?.type === "youtube") {
+      const videoId = youtubeVideoId(media.url);
+      if (videoId) {
+        const youtubeURL = `https://www.youtube.com/watch?v=${videoId}`;
+        return `<div class="dialog-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}?playsinline=1" title="${title} の動画" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div><a class="text-link dialog-video-link" href="${youtubeURL}" target="_blank" rel="noopener noreferrer">YouTubeで見る <span aria-hidden="true">↗</span></a>`;
+      }
+    }
+
+    return `<img class="dialog-image" src="${escapeHTML(imageURL)}" alt="${imageAlt}" width="960" height="540">`;
+  }
+
+  function hasPlayableMedia(work) {
+    if (work.media?.type === "video") return Boolean(safeURL(work.media.src, true));
+    if (work.media?.type === "youtube") return Boolean(youtubeVideoId(work.media.url));
+    return false;
+  }
+
   function setupImages(root) {
     root.querySelectorAll("img").forEach((image) => {
       image.addEventListener("error", () => {
@@ -48,29 +98,36 @@
   }
 
   function fillPanel(slot) {
-    const work = works[wrapIndex(current + slot.position)];
-    slot.element.innerHTML = `<span class="panel-heading"><span class="panel-title">${escapeHTML(work.title)}</span><span class="panel-category">${escapeHTML(work.category)}</span></span><span class="panel-image"><img src="${escapeHTML(safeURL(work.image, true) || "assets/work-placeholder.svg")}" alt="${escapeHTML(work.imageAlt || work.title)}" width="960" height="540" draggable="false"><span class="panel-open" aria-hidden="true">↗</span></span>`;
+    const workIndex = wrapIndex(centerStep + slot.position);
+    if (slot.workIndex === workIndex) return;
+    slot.workIndex = workIndex;
+    const work = works[workIndex];
+    const mediaBadge = hasPlayableMedia(work) ? "is-video" : "";
+    const openIcon = hasPlayableMedia(work) ? "▶" : "↗";
+    slot.element.innerHTML = `<span class="panel-heading"><span class="panel-title">${escapeHTML(work.title)}</span></span><span class="panel-image"><img src="${escapeHTML(safeURL(work.image, true) || "assets/work-placeholder.svg")}" alt="${escapeHTML(work.imageAlt || work.title)}" width="960" height="540" draggable="false"><span class="panel-open ${mediaBadge}" aria-hidden="true">${openIcon}</span></span>`;
     setupImages(slot.element);
   }
 
-  function positionPanel(slot, drag = 0) {
-    const distance = Math.abs(slot.position);
+  function positionPanel(slot, drag = 0, fraction = trackPosition - centerStep) {
+    const relativePosition = slot.position - fraction;
+    const distance = Math.abs(relativePosition);
     const width = slot.element.offsetWidth;
-    const scale = distance === 0 ? 1 : distance === 1 ? .72 : .56;
-    const x = slot.position * width * .89 + drag;
+    const scale = distance <= 1 ? 1 - distance * .28 : Math.max(.56, .72 - (distance - 1) * .16);
+    const opacity = distance <= 1 ? 1 - distance * .58 : .42 * Math.max(0, 2 - distance);
+    const x = relativePosition * width * .89 + drag;
     slot.element.style.transform = `translateX(calc(-50% + ${x}px)) scale(${scale})`;
-    slot.element.style.opacity = distance === 0 ? "1" : distance === 1 ? ".42" : "0";
-    slot.element.style.zIndex = distance === 0 ? "3" : distance === 1 ? "2" : "0";
-    slot.element.style.pointerEvents = distance <= 1 ? "auto" : "none";
+    slot.element.style.opacity = String(opacity);
+    slot.element.style.zIndex = String(Math.max(0, Math.round((2.5 - distance) * 10)));
+    slot.element.style.pointerEvents = !moving && distance <= 1 ? "auto" : "none";
     slot.element.dataset.position = slot.position;
-    slot.element.tabIndex = distance === 0 ? 0 : -1;
+    slot.element.tabIndex = !moving && slot.position === 0 ? 0 : -1;
     slot.element.setAttribute("aria-hidden", String(distance > 1));
-    slot.element.setAttribute("aria-label", `${works[wrapIndex(current + slot.position)].title} ${distance === 0 ? "の詳細を開く" : "を選択"}`);
+    slot.element.setAttribute("aria-label", `${works[wrapIndex(centerStep + slot.position)].title} ${slot.position === 0 ? "の詳細を開く" : "を選択"}`);
   }
 
   function renderDetails(animate = true) {
     const work = works[current];
-    detail.innerHTML = `<div class="work-summary"><p class="eyebrow">${number(current + 1)} / ${sampleLabel(work)}</p><h3>${escapeHTML(work.tagline || work.title)}</h3><p>${escapeHTML(work.summary)}</p><button class="text-link detail-link" type="button">詳しく見る <span class="circle-arrow" aria-hidden="true">↗</span></button></div><dl class="work-meta"><div><dt>担当</dt><dd>${escapeHTML(work.role)}</dd></div><div><dt>使用技術</dt><dd class="tech-tags">${tags(work)}</dd></div><div><dt>ポイント</dt><dd>${(work.points ?? []).map(escapeHTML).join("<br>")}</dd></div></dl>`;
+    detail.innerHTML = `<div class="work-summary">${categoryTag(work)}<h3>${escapeHTML(work.tagline || work.title)}</h3><p>${escapeHTML(work.summary)}</p><button class="text-link detail-link" type="button">作品詳細を見る <span class="circle-arrow" aria-hidden="true">↗</span></button></div><dl class="work-meta"><div><dt>担当</dt><dd>${escapeHTML(work.role)}</dd></div><div><dt>使用技術</dt><dd class="tech-tags">${tags(work)}</dd></div><div><dt>ポイント</dt><dd>${(work.points ?? []).map(escapeHTML).join("<br>")}</dd></div></dl>`;
     detail.querySelector("button").addEventListener("click", openDialog);
     if (animate && !reducedMotion.matches) {
       detail.getAnimations().forEach((animation) => animation.cancel());
@@ -78,43 +135,85 @@
     }
     document.querySelector("#work-current").textContent = number(current + 1);
     document.querySelector("#carousel-status").textContent = `${works.length}作品中 ${current + 1}作品目、${work.title}`;
-    [...pagination.children].forEach((button, index) => button.setAttribute("aria-current", String(index === current)));
   }
 
   function goTo(index) {
     if (works.length < 2 || dialog.open) return;
-    preferredDirection = index < target ? -1 : 1;
-    target = wrapIndex(index);
-    if (!moving) moveTowardTarget();
-  }
+    target = index;
+    const destination = wrapIndex(target);
+    if (destination !== current) {
+      current = destination;
+      renderDetails(!moving);
+    }
+    if (moving) return;
 
-  function moveTowardTarget() {
-    if (current === target) return;
     moving = true;
-    const distance = wrapIndex(target - current);
-    const direction = distance === works.length / 2 ? preferredDirection : distance < works.length / 2 ? 1 : -1;
-    current = wrapIndex(current + direction);
+    stage.setAttribute("aria-busy", "true");
     slots.forEach((slot) => {
-      slot.position -= direction;
+      slot.element.classList.add("is-repositioning");
       positionPanel(slot);
     });
-    renderDetails();
+    if (reducedMotion.matches) {
+      trackPosition = target;
+      trackVelocity = 0;
+      updatePanelWindow(Math.round(trackPosition));
+      finishMovement();
+      return;
+    }
+    previousFrameTime = 0;
+    requestAnimationFrame(animateMovement);
+  }
 
-    // 画面外に抜けたパネルだけ反対側へ移し、ループ境界での逆走を防ぎます。
-    window.setTimeout(() => {
-      slots.forEach((slot) => {
-        if (Math.abs(slot.position) > 2) {
-          slot.position = direction > 0 ? 2 : -2;
-          slot.element.classList.add("is-repositioning");
-          fillPanel(slot);
-          positionPanel(slot);
-          void slot.element.offsetWidth;
-          slot.element.classList.remove("is-repositioning");
-        }
-      });
-      moving = false;
-      moveTowardTarget();
-    }, reducedMotion.matches ? 0 : 680);
+  function updatePanelWindow(nextCenterStep) {
+    const shift = nextCenterStep - centerStep;
+    if (!shift) return;
+    centerStep = nextCenterStep;
+    slots.forEach((slot) => {
+      slot.position -= shift;
+      while (slot.position < -2) slot.position += 5;
+      while (slot.position > 2) slot.position -= 5;
+      fillPanel(slot);
+    });
+  }
+
+  function finishMovement() {
+    trackPosition = target;
+    trackVelocity = 0;
+    updatePanelWindow(target);
+    moving = false;
+    stage.removeAttribute("aria-busy");
+    slots.forEach((slot) => {
+      slot.element.classList.remove("is-repositioning");
+      positionPanel(slot, 0, 0);
+    });
+  }
+
+  function animateMovement(time) {
+    if (!moving) return;
+    const deltaTime = previousFrameTime ? Math.min((time - previousFrameTime) / 1000, .032) : 1 / 60;
+    previousFrameTime = time;
+
+    // 目標が更新されても開始時刻を戻さず、現在の速度を保って追従します。
+    trackVelocity += (target - trackPosition) * 180 * deltaTime;
+    trackVelocity *= Math.exp(-25 * deltaTime);
+    trackVelocity = Math.max(-6, Math.min(6, trackVelocity));
+    trackPosition += trackVelocity * deltaTime;
+
+    updatePanelWindow(Math.round(trackPosition));
+    const fraction = trackPosition - centerStep;
+    slots.forEach((slot) => positionPanel(slot, 0, fraction));
+
+    if (Math.abs(target - trackPosition) < .003 && Math.abs(trackVelocity) < .025) {
+      finishMovement();
+      return;
+    }
+    requestAnimationFrame(animateMovement);
+  }
+
+  function nearestTarget(index) {
+    const destination = wrapIndex(index);
+    const cycle = Math.round((target - destination) / works.length);
+    return destination + cycle * works.length;
   }
 
   function openDialog(event) {
@@ -122,7 +221,26 @@
     const work = works[current];
     dialogOpener = event?.currentTarget ?? document.activeElement;
     const links = (work.links ?? []).filter((link) => safeURL(link.url));
-    dialogContent.innerHTML = `<p class="eyebrow">${sampleLabel(work)}</p><h2 id="dialog-title" class="dialog-title">${escapeHTML(work.title)}</h2><p class="dialog-summary">${escapeHTML(work.summary)}</p><img class="dialog-image" src="${escapeHTML(safeURL(work.image, true) || "assets/work-placeholder.svg")}" alt="${escapeHTML(work.imageAlt || work.title)}" width="960" height="540"><dl class="work-meta dialog-facts"><div><dt>担当</dt><dd>${escapeHTML(work.role)}</dd></div><div><dt>使用技術</dt><dd class="tech-tags">${tags(work)}</dd></div><div><dt>制作期間</dt><dd>${escapeHTML(work.period || "未設定")}</dd></div><div><dt>開発体制</dt><dd>${escapeHTML(work.team || "未設定")}</dd></div><div><dt>対象環境</dt><dd>${escapeHTML(work.platform || "未設定")}</dd></div></dl><section class="dialog-block"><h3>作品のポイント</h3><ul>${(work.points ?? []).map((point) => `<li>${escapeHTML(point)}</li>`).join("")}</ul></section>${(work.details ?? []).map((block) => `<section class="dialog-block"><h3>${escapeHTML(block.heading)}</h3><p>${escapeHTML(block.text)}</p></section>`).join("")}${links.length ? `<div class="dialog-block dialog-links">${links.map((link) => `<a class="text-link" href="${escapeHTML(safeURL(link.url))}" target="_blank" rel="noopener noreferrer">${escapeHTML(link.label)} <span aria-hidden="true">↗</span></a>`).join("")}</div>` : ""}`;
+    dialogContent.innerHTML = `
+      ${sampleLabel(work)}
+      <h2 id="dialog-title" class="dialog-title">${escapeHTML(work.title)}</h2>
+      ${categoryTag(work)}
+      <p class="dialog-summary">${escapeHTML(work.summary)}</p>
+      ${workMedia(work)}
+      <dl class="work-meta dialog-facts">
+        <div><dt>担当</dt><dd>${escapeHTML(work.role)}</dd></div>
+        <div><dt>使用技術</dt><dd class="tech-tags">${tags(work)}</dd></div>
+        <div><dt>制作期間</dt><dd>${escapeHTML(work.period || "未設定")}</dd></div>
+        <div><dt>開発体制</dt><dd>${escapeHTML(work.team || "未設定")}</dd></div>
+        <div><dt>対象環境</dt><dd>${escapeHTML(work.platform || "未設定")}</dd></div>
+      </dl>
+      <section class="dialog-block">
+        <h3>作品のポイント</h3>
+        <ul>${(work.points ?? []).map((point) => `<li>${escapeHTML(point)}</li>`).join("")}</ul>
+      </section>
+      ${(work.details ?? []).map((block) => `<section class="dialog-block"><h3>${escapeHTML(block.heading)}</h3><p>${escapeHTML(block.text)}</p></section>`).join("")}
+      ${links.length ? `<div class="dialog-block dialog-links">${links.map((link) => `<a class="text-link" href="${escapeHTML(safeURL(link.url))}" target="_blank" rel="noopener noreferrer">${escapeHTML(link.label)} <span aria-hidden="true">↗</span></a>`).join("")}</div>` : ""}
+    `;
     setupImages(dialogContent);
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.paddingRight = `${scrollbarWidth}px`;
@@ -138,6 +256,8 @@
     if (dialogClosing || !dialog.open) return;
     dialogClosing = true;
     dialog.classList.remove("is-open");
+    dialogContent.querySelectorAll("video").forEach((video) => video.pause());
+    dialogContent.querySelectorAll("iframe").forEach((frame) => { frame.src = "about:blank"; });
     window.setTimeout(() => {
       dialog.close();
       document.body.classList.remove("modal-open");
@@ -171,16 +291,8 @@
       element.addEventListener("click", (event) => {
         if (performance.now() < suppressClickUntil || moving) return;
         if (slot.position === 0) openDialog(event);
-        else goTo(current + slot.position);
+        else goTo(centerStep + slot.position);
       });
-    });
-    works.forEach((work, index) => {
-      const button = document.createElement("button");
-      button.className = "pagination-dot";
-      button.type = "button";
-      button.setAttribute("aria-label", `${work.title}を表示`);
-      button.addEventListener("click", () => goTo(index));
-      pagination.append(button);
     });
     renderDetails(false);
   } else {
@@ -189,23 +301,24 @@
   }
   previous.disabled = next.disabled = works.length < 2;
   document.querySelector("#work-total").textContent = number(works.length);
-  document.querySelector(".visual-topline > span:last-child").textContent = `${works.length ? "01" : "00"} — ${number(works.length)}`;
   if (works.length) {
     const heroImage = document.querySelector(".hero-visual img");
     heroImage.src = safeURL(works[0].image, true) || "assets/work-placeholder.svg";
     heroImage.alt = works[0].imageAlt || works[0].title;
-    document.querySelector(".visual-caption .tiny-label").innerHTML = `${works[0].isSample ? "SAMPLE VISUAL" : "PROJECT PREVIEW"} <span aria-hidden="true">↗</span>`;
+    document.querySelector(".hero-image-note").textContent = works[0].isSample ? "仮作品のイメージ" : works[0].title;
   }
   setupImages(document.querySelector(".hero-visual"));
   const sampleCount = works.filter((work) => work.isSample).length;
-  document.querySelector("#collection-label").textContent = sampleCount === works.length && sampleCount ? `DEMO COLLECTION / 仮作品${sampleCount}件` : `PROJECT COLLECTION / ${works.length}作品`;
+  const collectionLabel = document.querySelector("#collection-label");
+  collectionLabel.hidden = sampleCount === 0;
+  collectionLabel.textContent = sampleCount === works.length ? "掲載中の作品は仮データです。" : "仮作品を含みます。";
   previous.addEventListener("click", () => goTo(target - 1));
   next.addEventListener("click", () => goTo(target + 1));
   carousel.addEventListener("keydown", (event) => {
     if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
     event.preventDefault();
-    if (event.key === "Home") goTo(0);
-    else if (event.key === "End") goTo(works.length - 1);
+    if (event.key === "Home") goTo(nearestTarget(0));
+    else if (event.key === "End") goTo(nearestTarget(works.length - 1));
     else goTo(target + (event.key === "ArrowRight" ? 1 : -1));
   });
 
@@ -240,7 +353,7 @@
     slots.forEach((slot) => slot.element.classList.remove("is-repositioning"));
     if (completed.dragging) {
       suppressClickUntil = performance.now() + 400;
-      if (event.type === "pointerup" && Math.abs(completed.dx) > Math.min(60, stage.clientWidth * .1)) goTo(current + (completed.dx < 0 ? 1 : -1));
+      if (event.type === "pointerup" && Math.abs(completed.dx) > Math.min(60, stage.clientWidth * .1)) goTo(target + (completed.dx < 0 ? 1 : -1));
       else slots.forEach((slot) => positionPanel(slot));
     }
   }
@@ -300,6 +413,7 @@
     if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(updateScroll); }
   }, { passive: true });
   window.addEventListener("resize", updateScroll);
-  document.querySelector("#copyright-year").textContent = new Date().getFullYear();
+  const copyrightYear = document.querySelector("#copyright-year");
+  if (copyrightYear) copyrightYear.textContent = new Date().getFullYear();
   updateScroll();
 })();
