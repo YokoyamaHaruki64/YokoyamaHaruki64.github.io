@@ -15,7 +15,7 @@ window.PORTFOLIO_ABOUT = {
   ],
   qualifications: [
     {
-      name: "文部科学省後援 色彩検定3級",
+      name: "色彩検定3級",
       acquired: "2024/11",
       status: "合格"
     },
