@@ -29,6 +29,21 @@
   const tags = (work) => (work.technologies ?? []).map((technology) => `<span class="tech-tag">${escapeHTML(technology)}</span>`).join("");
   const categoryTag = (work) => work.category ? `<p class="work-category">${escapeHTML(work.category)}</p>` : "";
   const sampleLabel = (work) => work.isSample ? '<p class="sample-note">仮作品</p>' : "";
+  const medalLabels = { gold: "金賞", silver: "銀賞", bronze: "銅賞" };
+
+  function awardsMarkup(awards) {
+    if (!Array.isArray(awards)) return "";
+    const entries = awards.filter((award) => typeof award?.competition === "string" && award.competition.trim());
+    if (!entries.length) return "";
+
+    return `<ul class="award-list">${entries.map((award) => {
+      const medal = Object.hasOwn(medalLabels, award.medal) ? award.medal : "";
+      const result = typeof award.result === "string" && award.result.trim() ? award.result : medalLabels[medal] || "受賞";
+      const icon = medal ? `<svg class="award-medal-icon award-medal-icon--${medal}" viewBox="0 0 32 40" aria-hidden="true" focusable="false"><path class="award-ribbon" d="M6 2h8l4 13h-9L6 2Zm12 0h8l-3 13h-9l4-13Z"/><circle class="award-medal" cx="16" cy="25" r="10"/><path class="award-star" d="m16 18 2 4 4.5.7-3.2 3.1.8 4.4-4.1-2.1-4.1 2.1.8-4.4-3.2-3.1 4.5-.7 2-4Z"/></svg>` : "";
+      const year = typeof award.year === "string" && award.year.trim() ? `<span class="award-year">${escapeHTML(award.year)}</span>` : "";
+      return `<li class="award-item${medal ? ` award-item--${medal}` : ""}"><span class="award-copy"><span class="award-competition">${escapeHTML(award.competition)}</span>${year}</span><span class="award-result-group${medal ? ` award-result-group--${medal}` : ""}">${icon}<strong class="award-result">${escapeHTML(result)}</strong></span></li>`;
+    }).join("")}</ul>`;
+  }
 
   function safeURL(value, image = false) {
     try {
@@ -127,7 +142,8 @@
 
   function renderDetails(animate = true) {
     const work = works[current];
-    detail.innerHTML = `<div class="work-summary">${categoryTag(work)}<h3>${escapeHTML(work.tagline || work.title)}</h3><p>${escapeHTML(work.summary)}</p><button class="text-link detail-link" type="button">作品詳細を見る <span class="circle-arrow" aria-hidden="true">↗</span></button></div><dl class="work-meta"><div><dt>担当</dt><dd>${escapeHTML(work.role)}</dd></div><div><dt>使用技術</dt><dd class="tech-tags">${tags(work)}</dd></div><div><dt>ポイント</dt><dd>${(work.points ?? []).map(escapeHTML).join("<br>")}</dd></div></dl>`;
+    const awards = awardsMarkup(work.awards);
+    detail.innerHTML = `<div class="work-summary">${categoryTag(work)}<h3>${escapeHTML(work.tagline || work.title)}</h3><p>${escapeHTML(work.summary)}</p><button class="text-link detail-link" type="button">作品詳細を見る <span class="circle-arrow" aria-hidden="true">↗</span></button></div><dl class="work-meta"><div><dt>担当</dt><dd>${escapeHTML(work.role)}</dd></div><div><dt>使用技術</dt><dd class="tech-tags">${tags(work)}</dd></div><div><dt>ポイント</dt><dd>${(work.points ?? []).map(escapeHTML).join("<br>")}</dd></div>${awards ? `<div><dt>受賞歴</dt><dd>${awards}</dd></div>` : ""}</dl>`;
     detail.querySelector("button").addEventListener("click", openDialog);
     if (animate && !reducedMotion.matches) {
       detail.getAnimations().forEach((animation) => animation.cancel());
@@ -221,6 +237,7 @@
     const work = works[current];
     dialogOpener = event?.currentTarget ?? document.activeElement;
     const links = (work.links ?? []).filter((link) => safeURL(link.url));
+    const awards = awardsMarkup(work.awards);
     dialogContent.innerHTML = `
       ${sampleLabel(work)}
       <h2 id="dialog-title" class="dialog-title">${escapeHTML(work.title)}</h2>
@@ -233,6 +250,7 @@
         <div><dt>制作期間</dt><dd>${escapeHTML(work.period || "未設定")}</dd></div>
         <div><dt>開発体制</dt><dd>${escapeHTML(work.team || "未設定")}</dd></div>
         <div><dt>対象環境</dt><dd>${escapeHTML(work.platform || "未設定")}</dd></div>
+        ${awards ? `<div><dt>受賞歴</dt><dd>${awards}</dd></div>` : ""}
       </dl>
       <section class="dialog-block">
         <h3>作品のポイント</h3>

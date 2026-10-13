@@ -146,6 +146,26 @@ dd { margin: 0; font-size: 17px; }
 .work-meta dd { font-size: 16px; line-height: 1.9; overflow-wrap: anywhere; }
 .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .tech-tag { font-size: 16px; border: 1px solid var(--line); border-radius: 5px; padding: 2px 10px; }
+.award-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.award-item { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-width: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 9px; background: #fff; }
+.award-item--gold { border-color: color-mix(in srgb, var(--ring-yellow) 48%, white); background: color-mix(in srgb, var(--ring-yellow) 20%, white); }
+.award-item--silver { border-color: color-mix(in srgb, #aebbc4 48%, white); background: color-mix(in srgb, #aebbc4 20%, white); }
+.award-item--bronze { border-color: color-mix(in srgb, #cd8250 48%, white); background: color-mix(in srgb, #cd8250 20%, white); }
+.award-medal-icon { flex: 0 0 26px; width: 26px; height: 32px; }
+.award-medal-icon--gold { color: #9a710d; }
+.award-medal-icon--silver { color: #65717b; }
+.award-medal-icon--bronze { color: #92512f; }
+.award-ribbon { fill: color-mix(in srgb, currentColor 74%, white); }
+.award-medal { fill: currentColor; stroke: color-mix(in srgb, currentColor 72%, black); stroke-width: 1px; }
+.award-star { fill: white; }
+.award-copy { display: grid; flex: 1 1 auto; min-width: 0; line-height: 1.6; }
+.award-competition { overflow-wrap: anywhere; }
+.award-result-group { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; white-space: nowrap; }
+.award-result-group--gold { color: #9a710d; }
+.award-result-group--silver { color: #65717b; }
+.award-result-group--bronze { color: #92512f; }
+.award-result { font-size: 15px; line-height: 1.4; }
+.award-year { color: var(--muted); font-size: 14px; }
 
 .about-section { border-top: 1px solid var(--line); }
 .about-block + .about-block { margin-top: 72px; }
