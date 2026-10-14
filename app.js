@@ -2,37 +2,28 @@
   "use strict";
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const works = (window.PORTFOLIO_WORKS ?? [])
-    .map((work, sourceOrder) => ({ work, sourceOrder }))
-    .sort((a, b) => {
-      const indexA = Number.isInteger(a.work.index) && a.work.index >= 0 ? a.work.index : Number.MAX_SAFE_INTEGER;
-      const indexB = Number.isInteger(b.work.index) && b.work.index >= 0 ? b.work.index : Number.MAX_SAFE_INTEGER;
-      return indexA - indexB || a.sourceOrder - b.sourceOrder;
-    })
-    .map(({ work }) => work);
-  const stage = document.querySelector("#carousel-stage");
-  const carousel = document.querySelector(".carousel");
-  const detail = document.querySelector("#work-details");
+  const sourceWorks = window.PORTFOLIO_WORKS ?? [];
+  function sortWorks(order) {
+    const indexKey = order === "chronological" ? "chronologicalIndex" : "index";
+    return sourceWorks
+      .map((work, sourceOrder) => ({ work, sourceOrder }))
+      .sort((a, b) => {
+        const indexA = Number.isInteger(a.work[indexKey]) && a.work[indexKey] >= 0 ? a.work[indexKey] : Number.MAX_SAFE_INTEGER;
+        const indexB = Number.isInteger(b.work[indexKey]) && b.work[indexKey] >= 0 ? b.work[indexKey] : Number.MAX_SAFE_INTEGER;
+        return indexA - indexB || a.sourceOrder - b.sourceOrder;
+      })
+      .map(({ work }) => work);
+  }
+  let sortOrder = "recommended";
+  let works = sortWorks(sortOrder);
+  const worksGrid = document.querySelector("#works-grid");
   const dialog = document.querySelector("#work-dialog");
   const dialogContent = document.querySelector("#dialog-content");
-  const previous = document.querySelector("#previous-work");
-  const next = document.querySelector("#next-work");
-  const slots = [];
   let current = 0;
-  let target = 0;
-  let centerStep = 0;
-  let trackPosition = 0;
-  let trackVelocity = 0;
-  let moving = false;
-  let previousFrameTime = 0;
-  let gesture = null;
-  let suppressClickUntil = 0;
   let dialogClosing = false;
   let dialogOpener = null;
 
   const escapeHTML = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character]));
-  const wrapIndex = (index) => ((index % works.length) + works.length) % works.length;
-  const number = (value) => String(value).padStart(2, "0");
   const workURL = (work) => {
     const url = new URL(window.location.href);
     url.searchParams.delete("preview");
@@ -45,6 +36,21 @@
   const sampleLabel = (work) => work.isSample ? '<p class="sample-note">仮作品</p>' : "";
   const medalLabels = { gold: "金賞", silver: "銀賞", bronze: "銅賞" };
 
+  function periodRowsMarkup(period, fallback = "") {
+    const fields = [
+      ["期間", typeof period?.duration === "string" ? period.duration.trim() : ""],
+      ["時期", typeof period?.timing === "string" ? period.timing.trim() : ""],
+    ];
+    return fields.map(([label, value]) => {
+      const displayValue = value || fallback;
+      return displayValue ? `<div><dt>${label}</dt><dd>${escapeHTML(displayValue)}</dd></div>` : "";
+    }).join("");
+  }
+
+  function medalIconMarkup(medal, extraClass = "") {
+    return `<svg class="award-medal-icon award-medal-icon--${medal} ${extraClass}" viewBox="0 0 32 40" aria-hidden="true" focusable="false"><path class="award-ribbon" d="M6 2h8l4 13h-9L6 2Zm12 0h8l-3 13h-9l4-13Z"/><circle class="award-medal" cx="16" cy="25" r="10"/><path class="award-star" d="m16 18 2 4 4.5.7-3.2 3.1.8 4.4-4.1-2.1-4.1 2.1.8-4.4-3.2-3.1 4.5-.7 2-4Z"/></svg>`;
+  }
+
   function awardsMarkup(awards) {
     if (!Array.isArray(awards)) return "";
     const entries = awards.filter((award) => typeof award?.competition === "string" && award.competition.trim());
@@ -53,7 +59,7 @@
     return `<ul class="award-list">${entries.map((award) => {
       const medal = Object.hasOwn(medalLabels, award.medal) ? award.medal : "";
       const result = typeof award.result === "string" && award.result.trim() ? award.result : medalLabels[medal] || "受賞";
-      const icon = medal ? `<svg class="award-medal-icon award-medal-icon--${medal}" viewBox="0 0 32 40" aria-hidden="true" focusable="false"><path class="award-ribbon" d="M6 2h8l4 13h-9L6 2Zm12 0h8l-3 13h-9l4-13Z"/><circle class="award-medal" cx="16" cy="25" r="10"/><path class="award-star" d="m16 18 2 4 4.5.7-3.2 3.1.8 4.4-4.1-2.1-4.1 2.1.8-4.4-3.2-3.1 4.5-.7 2-4Z"/></svg>` : "";
+      const icon = medal ? medalIconMarkup(medal) : "";
       const year = typeof award.year === "string" && award.year.trim() ? `<span class="award-year">${escapeHTML(award.year)}</span>` : "";
       return `<li class="award-item${medal ? ` award-item--${medal}` : ""}"><span class="award-copy"><span class="award-competition">${escapeHTML(award.competition)}</span>${year}</span><span class="award-result-group${medal ? ` award-result-group--${medal}` : ""}">${icon}<strong class="award-result">${escapeHTML(result)}</strong></span></li>`;
     }).join("")}</ul>`;
@@ -114,7 +120,7 @@
       const videoId = youtubeVideoId(media.url);
       if (videoId) {
         const youtubeURL = `https://www.youtube.com/watch?v=${videoId}`;
-        return `<div class="dialog-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&controls=1&playsinline=1" title="${title} の動画" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div><a class="text-link dialog-video-link" href="${youtubeURL}" target="_blank" rel="noopener noreferrer">YouTubeで見る <span aria-hidden="true">↗</span></a>`;
+        return `<div class="dialog-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&controls=1&playsinline=1" title="${title} の動画" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div><a class="text-link dialog-video-link" href="${youtubeURL}" target="_blank" rel="noopener noreferrer">YouTubeで見る <span aria-hidden="true">↗</span></a>`;
       }
     }
 
@@ -127,6 +133,54 @@
     return false;
   }
 
+  function cardAwardsMarkup(awards) {
+    if (!Array.isArray(awards)) return "";
+    const entries = awards.filter((award) => typeof award?.competition === "string" && award.competition.trim());
+    if (!entries.length) return "";
+
+    return `<span class="work-card-awards">${entries.map((award) => {
+      const medal = Object.hasOwn(medalLabels, award.medal) ? award.medal : "";
+      const result = typeof award.result === "string" && award.result.trim() ? award.result : medalLabels[medal] || "受賞";
+      const year = typeof award.year === "string" && award.year.trim() ? `<span class="work-card-award-year">${escapeHTML(award.year)}</span>` : "";
+      return `<span class="work-card-award${medal ? ` work-card-award--${medal}` : ""}"><span class="work-card-award-copy"><span class="work-card-award-name">${escapeHTML(award.competition)}</span>${year}</span><span class="work-card-award-result">${medal ? medalIconMarkup(medal, "work-card-medal") : ""}<span>${escapeHTML(result)}</span></span></span>`;
+    }).join("")}</span>`;
+  }
+
+  function workCardMarkup(work, index) {
+    const image = escapeHTML(safeURL(work.image, true) || "assets/work-placeholder.svg");
+    const imageAlt = escapeHTML(work.imageAlt || work.title);
+    const title = escapeHTML(work.title);
+    const category = work.category ? `<span class="work-category">${escapeHTML(work.category)}</span>` : "";
+    const sample = work.isSample ? '<span class="work-card-sample">仮作品</span>' : "";
+    const media = hasPlayableMedia(work) ? '<span class="work-card-media">動画あり</span>' : "";
+    const awards = cardAwardsMarkup(work.awards);
+    const productionTag = typeof work.isTeam === "boolean"
+      ? `<li class="work-card-tag work-card-tag--production work-card-tag--production-${work.isTeam ? "team" : "individual"}">${work.isTeam ? "チーム制作" : "個人制作"}</li>`
+      : "";
+    const toolTags = Array.isArray(work.mainTools)
+      ? work.mainTools
+        .filter((tool) => typeof tool === "string" && tool.trim())
+        .map((tool) => `<li class="work-card-tag">${escapeHTML(tool)}</li>`)
+        .join("")
+      : "";
+    const workTagsMarkup = productionTag || toolTags
+      ? `<ul class="work-card-tags" aria-label="制作形態と主な開発環境">${productionTag}${toolTags}</ul>`
+      : "";
+    const periodRows = periodRowsMarkup(work.period);
+    const periodMarkup = periodRows ? `<dl class="work-card-period">${periodRows}</dl>` : "";
+
+    return `<a class="work-card reveal" href="${escapeHTML(workURL(work).href)}" data-work-index="${index}" aria-haspopup="dialog" aria-label="${title}の詳細を開く">
+      <span class="work-card-image"><img src="${image}" alt="${imageAlt}" width="960" height="540" loading="lazy" draggable="false">${media}<span class="work-card-image-arrow" aria-hidden="true">↗</span></span>
+      <div class="work-card-body">
+        <span class="work-card-labels">${category}${sample}</span>
+        <h3 class="work-card-title">${title}</h3>
+        ${workTagsMarkup}${periodMarkup}
+        <p class="work-card-summary">${escapeHTML(work.summary)}</p>
+        <span class="work-card-footer">${awards}<span class="work-card-more">詳しく見る <span aria-hidden="true">↗</span></span></span>
+      </div>
+    </a>`;
+  }
+
   function setupImages(root) {
     root.querySelectorAll("img").forEach((image) => {
       image.addEventListener("error", () => {
@@ -136,130 +190,11 @@
     });
   }
 
-  function fillPanel(slot) {
-    const workIndex = wrapIndex(centerStep + slot.position);
-    if (slot.workIndex === workIndex) return;
-    slot.workIndex = workIndex;
-    const work = works[workIndex];
-    const mediaBadge = hasPlayableMedia(work) ? "is-video" : "";
-    const openIcon = hasPlayableMedia(work) ? "▶" : "↗";
-    slot.element.innerHTML = `<span class="panel-heading"><span class="panel-title">${escapeHTML(work.title)}</span></span><span class="panel-image"><img src="${escapeHTML(safeURL(work.image, true) || "assets/work-placeholder.svg")}" alt="${escapeHTML(work.imageAlt || work.title)}" width="960" height="540" draggable="false"><span class="panel-open ${mediaBadge}" aria-hidden="true">${openIcon}</span></span>`;
-    setupImages(slot.element);
-  }
-
-  function positionPanel(slot, drag = 0, fraction = trackPosition - centerStep) {
-    const relativePosition = slot.position - fraction;
-    const distance = Math.abs(relativePosition);
-    const width = slot.element.offsetWidth;
-    const scale = distance <= 1 ? 1 - distance * .28 : Math.max(.56, .72 - (distance - 1) * .16);
-    const opacity = distance <= 1 ? 1 - distance * .58 : .42 * Math.max(0, 2 - distance);
-    const x = relativePosition * width * .89 + drag;
-    slot.element.style.transform = `translateX(calc(-50% + ${x}px)) scale(${scale})`;
-    slot.element.style.opacity = String(opacity);
-    slot.element.style.zIndex = String(Math.max(0, Math.round((2.5 - distance) * 10)));
-    slot.element.style.pointerEvents = !moving && distance <= 1 ? "auto" : "none";
-    slot.element.dataset.position = slot.position;
-    slot.element.tabIndex = !moving && slot.position === 0 ? 0 : -1;
-    slot.element.setAttribute("aria-hidden", String(distance > 1));
-    slot.element.setAttribute("aria-label", `${works[wrapIndex(centerStep + slot.position)].title} ${slot.position === 0 ? "の詳細を開く" : "を選択"}`);
-  }
-
-  function renderDetails(animate = true) {
-    const work = works[current];
-    const awards = awardsMarkup(work.awards);
-    detail.innerHTML = `<div class="work-summary">${categoryTag(work)}<h3>${escapeHTML(work.tagline || work.title)}</h3><p>${escapeHTML(work.summary)}</p><button class="text-link detail-link" type="button">作品詳細を見る <span class="circle-arrow" aria-hidden="true">↗</span></button></div><dl class="work-meta"><div><dt>担当</dt><dd>${escapeHTML(work.role)}</dd></div><div><dt>使用技術</dt><dd class="tech-tags">${tags(work)}</dd></div><div><dt>ポイント</dt><dd>${(work.points ?? []).map(escapeHTML).join("<br>")}</dd></div>${awards ? `<div><dt>受賞歴</dt><dd>${awards}</dd></div>` : ""}</dl>`;
-    detail.querySelector("button").addEventListener("click", openDialog);
-    if (animate && !reducedMotion.matches) {
-      detail.getAnimations().forEach((animation) => animation.cancel());
-      detail.animate([{ opacity: .25, transform: "translateY(8px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 400, easing: "cubic-bezier(.22,1,.36,1)" });
-    }
-    document.querySelector("#work-current").textContent = number(current + 1);
-    document.querySelector("#carousel-status").textContent = `${works.length}作品中 ${current + 1}作品目、${work.title}`;
-  }
-
-  function goTo(index) {
-    if (works.length < 2 || dialog.open) return;
-    target = index;
-    const destination = wrapIndex(target);
-    if (destination !== current) {
-      current = destination;
-      renderDetails(!moving);
-    }
-    if (moving) return;
-
-    moving = true;
-    stage.setAttribute("aria-busy", "true");
-    slots.forEach((slot) => {
-      slot.element.classList.add("is-repositioning");
-      positionPanel(slot);
-    });
-    if (reducedMotion.matches) {
-      trackPosition = target;
-      trackVelocity = 0;
-      updatePanelWindow(Math.round(trackPosition));
-      finishMovement();
-      return;
-    }
-    previousFrameTime = 0;
-    requestAnimationFrame(animateMovement);
-  }
-
-  function updatePanelWindow(nextCenterStep) {
-    const shift = nextCenterStep - centerStep;
-    if (!shift) return;
-    centerStep = nextCenterStep;
-    slots.forEach((slot) => {
-      slot.position -= shift;
-      while (slot.position < -2) slot.position += 5;
-      while (slot.position > 2) slot.position -= 5;
-      fillPanel(slot);
-    });
-  }
-
-  function finishMovement() {
-    trackPosition = target;
-    trackVelocity = 0;
-    updatePanelWindow(target);
-    moving = false;
-    stage.removeAttribute("aria-busy");
-    slots.forEach((slot) => {
-      slot.element.classList.remove("is-repositioning");
-      positionPanel(slot, 0, 0);
-    });
-  }
-
-  function animateMovement(time) {
-    if (!moving) return;
-    const deltaTime = previousFrameTime ? Math.min((time - previousFrameTime) / 1000, .032) : 1 / 60;
-    previousFrameTime = time;
-
-    // 目標が更新されても開始時刻を戻さず、現在の速度を保って追従します。
-    trackVelocity += (target - trackPosition) * 180 * deltaTime;
-    trackVelocity *= Math.exp(-25 * deltaTime);
-    trackVelocity = Math.max(-6, Math.min(6, trackVelocity));
-    trackPosition += trackVelocity * deltaTime;
-
-    updatePanelWindow(Math.round(trackPosition));
-    const fraction = trackPosition - centerStep;
-    slots.forEach((slot) => positionPanel(slot, 0, fraction));
-
-    if (Math.abs(target - trackPosition) < .003 && Math.abs(trackVelocity) < .025) {
-      finishMovement();
-      return;
-    }
-    requestAnimationFrame(animateMovement);
-  }
-
-  function nearestTarget(index) {
-    const destination = wrapIndex(index);
-    const cycle = Math.round((target - destination) / works.length);
-    return destination + cycle * works.length;
-  }
-
   function openDialog(event, updateURL = true) {
-    if (moving || dialog.open || !works.length) return;
+    if (dialog.open || !works.length) return;
     const work = works[current];
-    dialogOpener = event?.currentTarget ?? slots.find((slot) => slot.position === 0)?.element ?? document.activeElement;
+    dialogOpener = event?.currentTarget ?? worksGrid.querySelector(`[data-work-index="${current}"]`) ?? document.activeElement;
+    dialog.classList.toggle("is-pointer-open", event?.inputMode === "pointer");
     clearTimeout(shareStatusTimer);
     shareStatus.classList.remove("is-visible");
     shareStatus.textContent = "";
@@ -278,7 +213,7 @@
       <dl class="work-meta dialog-facts">
         <div><dt>担当</dt><dd>${escapeHTML(work.role)}</dd></div>
         <div><dt>使用技術</dt><dd class="tech-tags">${tags(work)}</dd></div>
-        <div><dt>制作期間</dt><dd>${escapeHTML(work.period || "未設定")}</dd></div>
+        <div><dt>制作期間</dt><dd><dl class="dialog-period">${periodRowsMarkup(work.period, "未設定")}</dl></dd></div>
         <div><dt>開発体制</dt><dd>${escapeHTML(work.team || "未設定")}</dd></div>
         <div><dt>対象環境</dt><dd>${escapeHTML(work.platform || "未設定")}</dd></div>
         ${awards ? `<div><dt>受賞歴</dt><dd>${awards}</dd></div>` : ""}
@@ -320,12 +255,6 @@
     if (dialog.open) return;
 
     current = workIndex;
-    target = workIndex;
-    trackPosition = workIndex;
-    trackVelocity = 0;
-    updatePanelWindow(workIndex);
-    slots.forEach((slot) => positionPanel(slot, 0, 0));
-    renderDetails(false);
     openDialog(undefined, false);
   }
 
@@ -334,7 +263,7 @@
     dialogClosing = true;
     dialog.classList.remove("is-open");
     dialogContent.querySelectorAll("video").forEach((video) => video.pause());
-    dialogContent.querySelectorAll("iframe").forEach((frame) => { frame.src = "about:blank"; });
+    dialogContent.querySelectorAll("iframe").forEach((frame) => frame.remove());
     if (!fromHistory) {
       const url = new URL(window.location.href);
       const workId = url.searchParams.get("work");
@@ -346,6 +275,7 @@
     }
     window.setTimeout(() => {
       dialog.close();
+      dialog.classList.remove("is-pointer-open");
       document.body.classList.remove("modal-open");
       document.body.style.paddingRight = "";
       dialogOpener?.focus({ preventScroll: true });
@@ -355,6 +285,9 @@
 
   dialog.querySelector(".dialog-close").addEventListener("click", () => closeDialog());
   dialog.addEventListener("cancel", (event) => { event.preventDefault(); closeDialog(); });
+  dialog.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") dialog.classList.remove("is-pointer-open");
+  });
   window.addEventListener("popstate", showWorkFromURL);
 
   async function copyShareURL(url) {
@@ -400,30 +333,34 @@
   dialog.addEventListener("pointerdown", (event) => { backdropPressed = outsideDialog(event); });
   dialog.addEventListener("click", (event) => { if (backdropPressed && outsideDialog(event)) closeDialog(); });
 
-  if (works.length) {
-    const positions = works.length === 1 ? [0] : [-2, -1, 0, 1, 2];
-    positions.forEach((position) => {
-      const element = document.createElement("button");
-      element.type = "button";
-      element.className = "work-panel";
-      const slot = { element, position };
-      slots.push(slot);
-      fillPanel(slot);
-      stage.append(element);
-      positionPanel(slot);
-      element.addEventListener("click", (event) => {
-        if (performance.now() < suppressClickUntil || moving) return;
-        if (slot.position === 0) openDialog(event);
-        else goTo(centerStep + slot.position);
-      });
-    });
-    renderDetails(false);
-  } else {
-    detail.textContent = "作品は準備中です。";
-    document.querySelector("#work-current").textContent = "00";
+  function renderWorks() {
+    worksGrid.innerHTML = works.length
+      ? works.map(workCardMarkup).join("")
+      : '<p class="works-empty">作品は準備中です。</p>';
+    setupImages(worksGrid);
   }
-  previous.disabled = next.disabled = works.length < 2;
-  document.querySelector("#work-total").textContent = number(works.length);
+
+  renderWorks();
+  const sortButtons = [...document.querySelectorAll(".works-sort-button")];
+  sortButtons.forEach((button) => button.addEventListener("click", () => {
+    const nextOrder = button.dataset.sortOrder;
+    if (nextOrder === sortOrder || !["recommended", "chronological"].includes(nextOrder)) return;
+    sortOrder = nextOrder;
+    works = sortWorks(sortOrder);
+    renderWorks();
+    sortButtons.forEach((sortButton) => {
+      sortButton.setAttribute("aria-pressed", String(sortButton.dataset.sortOrder === sortOrder));
+    });
+  }));
+
+  worksGrid.addEventListener("click", (event) => {
+    const card = event.target.closest(".work-card");
+    if (!card || !worksGrid.contains(card)) return;
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    current = Number(card.dataset.workIndex);
+    openDialog({ currentTarget: card, inputMode: event.detail > 0 ? "pointer" : "keyboard" });
+  });
   if (works.length) {
     const heroImage = document.querySelector(".hero-visual img");
     heroImage.src = safeURL(works[0].image, true) || "assets/work-placeholder.svg";
@@ -435,81 +372,6 @@
   const collectionLabel = document.querySelector("#collection-label");
   collectionLabel.hidden = sampleCount === 0;
   collectionLabel.textContent = sampleCount === works.length ? "掲載中の作品は仮データです。" : "仮作品を含みます。";
-  previous.addEventListener("click", () => goTo(target - 1));
-  next.addEventListener("click", () => goTo(target + 1));
-  carousel.addEventListener("keydown", (event) => {
-    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
-    event.preventDefault();
-    if (event.key === "Home") goTo(nearestTarget(0));
-    else if (event.key === "End") goTo(nearestTarget(works.length - 1));
-    else goTo(target + (event.key === "ArrowRight" ? 1 : -1));
-  });
-
-  stage.addEventListener("pointerdown", (event) => {
-    if (!event.isPrimary || event.button !== 0 || moving || works.length < 2) return;
-    const centerPanel = slots.find((slot) => slot.position === 0);
-    const stepWidth = (centerPanel?.element.offsetWidth ?? stage.clientWidth) * .89;
-    gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0, startPosition: target, stepWidth, dragging: false };
-  });
-  stage.addEventListener("pointermove", (event) => {
-    if (!gesture || event.pointerId !== gesture.id) return;
-    const dx = event.clientX - gesture.x;
-    const dy = event.clientY - gesture.y;
-    if (!gesture.dragging && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) { gesture = null; return; }
-    if (!gesture.dragging && Math.abs(dx) > 8) {
-      gesture.dragging = true;
-      stage.setPointerCapture(event.pointerId);
-      stage.classList.add("is-dragging");
-      slots.forEach((slot) => slot.element.classList.add("is-repositioning"));
-    }
-    if (gesture.dragging) {
-      gesture.dx = dx;
-      trackPosition = gesture.startPosition - dx / gesture.stepWidth;
-      updatePanelWindow(Math.round(trackPosition));
-      slots.forEach((slot) => positionPanel(slot, 0, trackPosition - centerStep));
-    }
-  });
-
-  function endGesture(event) {
-    if (!gesture || gesture.id !== event.pointerId) return;
-    const completed = gesture;
-    gesture = null;
-    if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
-    stage.classList.remove("is-dragging");
-    if (completed.dragging) {
-      suppressClickUntil = performance.now() + 400;
-      if (event.type === "pointerup") completed.dx = event.clientX - completed.x;
-      trackPosition = completed.startPosition - completed.dx / completed.stepWidth;
-      updatePanelWindow(Math.round(trackPosition));
-      slots.forEach((slot) => positionPanel(slot, 0, trackPosition - centerStep));
-
-      const threshold = Math.min(60, stage.clientWidth * .1);
-      const shouldAdvance = event.type === "pointerup" && Math.abs(completed.dx) > threshold;
-      const steps = shouldAdvance ? Math.max(1, Math.round(Math.abs(completed.dx) / completed.stepWidth)) : 0;
-      const destination = completed.startPosition + (completed.dx < 0 ? steps : -steps);
-
-      // 解放位置から、現在または移動先の作品中央へ吸着させます。
-      goTo(destination);
-    } else {
-      slots.forEach((slot) => slot.element.classList.remove("is-repositioning"));
-    }
-  }
-
-  stage.addEventListener("pointerup", endGesture);
-  stage.addEventListener("pointercancel", endGesture);
-  // タッチの暗黙キャプチャを子画像から移す際のイベントは終了扱いにしません。
-  stage.addEventListener("lostpointercapture", (event) => {
-    if (event.target === stage) endGesture(event);
-  });
-  stage.addEventListener("dragstart", (event) => event.preventDefault());
-  // 題名の折り返しや画面幅の変化にも追従し、操作ボタンとの重なりを防ぎます。
-  const panelObserver = new ResizeObserver(() => {
-    if (slots.length) stage.style.height = `${Math.max(...slots.map((slot) => slot.element.offsetHeight)) + 8}px`;
-    slots.forEach((slot) => positionPanel(slot));
-  });
-  panelObserver.observe(stage);
-  slots.forEach((slot) => panelObserver.observe(slot.element));
-
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
