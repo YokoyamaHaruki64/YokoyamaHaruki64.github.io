@@ -11,8 +11,10 @@
   <script src="data/works.js" defer></script>
   <script src="data/skills.js" defer></script>
   <script src="data/about.js" defer></script>
+  <script src="data/contact.js" defer></script>
   <script src="skills.js" defer></script>
   <script src="about.js" defer></script>
+  <script src="contact.js" defer></script>
   <script src="background.js" defer></script>
   <script src="app.js" defer></script>
 </head>
@@ -21,7 +23,10 @@
   <header class="site-header">
     <div class="header-inner">
       <a class="brand" href="#hero" aria-label="横山晴紀 トップへ"><img class="brand-mark" src="assets/favicon-light.svg" alt="" width="48" height="48"></a>
-      <nav class="nav" aria-label="各セクションへ">
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-label="メニューを開く" aria-controls="site-nav" aria-expanded="false">
+        <span class="menu-toggle-icon" aria-hidden="true"></span>
+      </button>
+      <nav class="nav" id="site-nav" aria-label="各セクションへ">
         <a href="#hero" aria-current="location">Top</a><a href="#profile">Profile</a><a href="#skill">Skill</a><a href="#works">Works</a><a href="#about">About</a><a href="#contact">Contact</a>
       </nav>
     </div>
@@ -32,7 +37,7 @@
       <div class="hero-copy">
         <p class="hero-role">ゲームプログラマー志望</p>
         <h1 id="hero-title">横山 晴紀<!--<span class="title-dot">.</span>--></h1>
-        <p class="hero-catch">「遊び」の楽しさを<br>技術で「創る」。</p>
+        <p class="hero-catch">「遊び」の楽しさを<br>　技術で「創る」。</p>
         <a class="primary-link" href="#works">作品を見る <span aria-hidden="true">↓</span></a>
       </div>
       <a class="hero-visual" href="#works" aria-label="制作作品のセクションへ">
@@ -43,8 +48,8 @@
     <section class="section wrap" id="profile" aria-labelledby="profile-title">
       <div class="section-heading reveal"><h2 id="profile-title">Profile</h2></div>
       <div class="profile-layout reveal">
-        <div class="profile-photo" role="img" aria-label="プロフィール写真の掲載予定枠">
-          <span class="profile-photo-placeholder" aria-hidden="true">写真を設定</span>
+        <div class="profile-photo">
+          <img src="assets/photo.jpg" alt="横山晴紀の写真" width="708" height="944">
         </div>
         <div class="profile-copy">
           <h3>横山 晴紀</h3>
@@ -53,7 +58,7 @@
             <div><dt>志望職種</dt><dd>ゲームプログラマー</dd></div>
             <div><dt>卒業予定</dt><dd>2028年3月</dd></div>
           </dl>
-          <p class="profile-intro">ゲーム制作を通してプログラミングを学んでいます。</p>
+          <p class="profile-intro">C++,DirectXをメインに開発を学んでいます。<br>ゲームを通じて、誰かを笑顔に出来るような、幸せだと感じてもらえるような体験を提供出来るよう、技術を磨いています。</p>
         </div>
       </div>
     </section>
@@ -63,8 +68,8 @@
       <noscript><p class="section-note">Skillsを見るにはJavaScriptを有効にしてください。</p></noscript>
     </section>
     <section class="section works-section" id="works" aria-labelledby="works-title">
-      <div class="wrap section-heading reveal"><h2 id="works-title" class="display-heading">制作作品</h2><p class="sample-note" id="collection-label">掲載中の作品は仮データです。</p></div>
-      <div class="carousel reveal" role="region" aria-roledescription="カルーセル" aria-label="制作作品" tabindex="0">
+      <div class="wrap section-heading reveal"><h2 id="works-title" class="display-heading">Works</h2><p class="sample-note" id="collection-label">掲載中の作品は仮データです。</p></div>
+      <div class="carousel reveal" role="region" aria-roledescription="カルーセル" aria-label="Works" tabindex="0">
         <div class="carousel-stage" id="carousel-stage"></div>
         <div class="carousel-controls wrap"><button class="circle-button" id="previous-work" aria-label="前の作品">&lt;</button><p class="work-counter"><span id="work-current">01</span><span class="counter-divider">/</span><span id="work-total">04</span></p><button class="circle-button" id="next-work" aria-label="次の作品">&gt;</button></div>
         <p class="sr-only" id="carousel-status" role="status" aria-live="polite" aria-atomic="true"></p>
@@ -81,7 +86,7 @@
         </div>
       </div>
       <section class="about-block" aria-labelledby="values-title">
-        <div class="about-block-heading reveal"><h3 id="values-title">制作で大切にしたいこと</h3><p class="draft-note" id="values-draft-note" hidden>紹介文は仮原稿です。</p></div>
+        <div class="about-block-heading reveal"><h3 id="values-title">制作で大切にしたいこと</h3><p class="draft-note" id="values-draft-note" hidden></p></div>
         <div class="about-principles" id="values-list"><p class="about-empty">掲載準備中です。</p></div>
       </section>
       <section class="about-block qualifications-block" aria-labelledby="qualifications-title">
@@ -91,9 +96,9 @@
       </section>
       <noscript><p class="section-note">詳しい人物紹介を表示するにはJavaScriptを有効にしてください。</p></noscript>
     </section>
-    <section class="section contact-section" id="contact" aria-labelledby="contact-title"><div class="wrap"><div class="section-heading reveal"><h2 id="contact-title">Contact</h2></div><p class="contact-content reveal">連絡先は準備中です。</p></div></section>
+    <section class="section contact-section" id="contact" aria-labelledby="contact-title"><div class="wrap"><div class="section-heading reveal"><h2 id="contact-title">Contact</h2></div><div class="contact-content reveal" id="contact-content"><p>連絡先は準備中です。</p></div></div></section>
   </main>
   <footer class="site-footer wrap"><a class="back-top" href="#hero">トップへ <span aria-hidden="true">↑</span></a></footer>
-  <dialog id="work-dialog" class="work-dialog" aria-labelledby="dialog-title"><div class="dialog-toolbar"><button class="circle-button dialog-close" aria-label="作品詳細を閉じる">×</button></div><div id="dialog-content"></div></dialog>
+  <dialog id="work-dialog" class="work-dialog" aria-labelledby="dialog-title"><div class="dialog-toolbar"><span class="dialog-share-status" aria-live="polite"></span><button class="circle-button dialog-share" type="button" aria-label="作品リンクをコピー"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 13.5a4.5 4.5 0 0 0 6.36 0l3-3a4.5 4.5 0 0 0-6.36-6.36l-1.72 1.72"/><path d="M14 10.5a4.5 4.5 0 0 0-6.36 0l-3 3A4.5 4.5 0 0 0 11 19.86l1.72-1.72"/></svg></button><button class="circle-button dialog-close" aria-label="作品詳細を閉じる">×</button></div><div id="dialog-content"></div></dialog>
 </body>
 </html>

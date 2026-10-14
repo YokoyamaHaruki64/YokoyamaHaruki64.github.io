@@ -28,7 +28,7 @@
         iconSlot.append(image);
         iconSlot.classList.add("has-image");
       } else {
-        iconSlot.textContent = "画像";
+        iconSlot.classList.add("is-empty");
       }
 
       const label = document.createElement("span");

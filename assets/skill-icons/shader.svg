@@ -1,0 +1,58 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="orbBase" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(352 148) rotate(132.574) scale(354.653 347.347)">
+      <stop offset="0" stop-color="#EAF8FF"/>
+      <stop offset="0.19" stop-color="#87D8FF"/>
+      <stop offset="0.48" stop-color="#268BFF"/>
+      <stop offset="0.78" stop-color="#2C39F0"/>
+      <stop offset="1" stop-color="#9E54FF"/>
+    </radialGradient>
+
+    <radialGradient id="highlightSoft" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(334 165) rotate(144.162) scale(115.203 75.258)">
+      <stop offset="0" stop-color="white" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="leftGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(175 257) rotate(10.813) scale(124.512 209.457)">
+      <stop offset="0" stop-color="#8F5CFF" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#8F5CFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="bottomTint" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(270 367) rotate(90) scale(69 124)">
+      <stop offset="0" stop-color="#7C3AED" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#7C3AED" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="shadowBlur" x="98" y="356" width="313" height="71" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+
+    <filter id="sparkleGlow" x="334" y="56" width="138" height="138" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#8EDBFF" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <!-- Ground shadow -->
+  <ellipse cx="255" cy="392" rx="125" ry="22" fill="#6D4BFF" fill-opacity="0.20" filter="url(#shadowBlur)"/>
+
+  <!-- Orb -->
+  <circle cx="255" cy="257" r="146" fill="url(#orbBase)"/>
+  <circle cx="255" cy="257" r="146" fill="url(#leftGlow)"/>
+  <circle cx="255" cy="257" r="146" fill="url(#bottomTint)"/>
+
+  <!-- Large soft highlight -->
+  <ellipse cx="325" cy="168" rx="80" ry="52" transform="rotate(25 325 168)" fill="url(#highlightSoft)"/>
+
+  <!-- Edge sheen -->
+  <path d="M164 144C203 121 254 112 298 120C226 123 169 177 145 250C136 276 134 310 141 340C128 319 121 289 121 257C121 208 138 169 164 144Z" fill="white" fill-opacity="0.10"/>
+  <path d="M351 154C377 182 393 220 393 262C393 318 364 367 321 394C352 361 369 316 369 267C369 224 355 186 330 156C338 154 345 153 351 154Z" fill="white" fill-opacity="0.08"/>
+
+  <!-- Sparkle -->
+  <g filter="url(#sparkleGlow)" transform="translate(392 122)">
+    <path d="M0 34C22 34 34 22 34 0C34 22 46 34 68 34C46 34 34 46 34 68C34 46 22 34 0 34Z" fill="white"/>
+  </g>
+</svg>

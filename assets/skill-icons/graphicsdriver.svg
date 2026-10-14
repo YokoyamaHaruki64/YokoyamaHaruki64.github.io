@@ -1,0 +1,42 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="layerTop" x1="98" y1="130" x2="202" y2="214" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8EC5FF" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#3B82F6" stop-opacity="0.58"/>
+    </linearGradient>
+    <linearGradient id="layerMid" x1="98" y1="188" x2="202" y2="272" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#60A5FA" stop-opacity="0.78"/>
+      <stop offset="1" stop-color="#1D6FF2" stop-opacity="0.72"/>
+    </linearGradient>
+    <linearGradient id="layerBot" x1="98" y1="246" x2="202" y2="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2F7FF7" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#0E4FD4"/>
+    </linearGradient>
+    <linearGradient id="accentStroke" x1="248" y1="214" x2="430" y2="328" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2C7EF7"/>
+      <stop offset="1" stop-color="#0F55DD"/>
+    </linearGradient>
+    <filter id="softShadow" x="0" y="0" width="512" height="512" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#2563EB" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#softShadow)">
+    <!-- Top layer -->
+    <path d="M130 118L222 176L130 234L38 176L130 118Z" fill="url(#layerTop)"/>
+    <!-- Middle layer -->
+    <path d="M130 176L222 234L130 292L38 234L130 176Z" fill="url(#layerMid)"/>
+    <!-- Bottom layer -->
+    <path d="M130 234L222 292L130 350L38 292L130 234Z" fill="url(#layerBot)"/>
+
+    <!-- Arrow -->
+    <path d="M262 251C269.732 251 276 257.268 276 265C276 272.732 269.732 279 262 279H212C204.268 279 198 272.732 198 265C198 257.268 204.268 251 212 251H262Z" fill="url(#accentStroke)"/>
+    <path d="M251.101 224.899C256.569 219.431 265.431 219.431 270.899 224.899L304.101 258.101C309.569 263.569 309.569 272.431 304.101 277.899L270.899 311.101C265.431 316.569 256.569 316.569 251.101 311.101C245.633 305.633 245.633 296.771 251.101 291.302L274.404 268L251.101 244.698C245.633 239.229 245.633 230.367 251.101 224.899Z" fill="url(#accentStroke)"/>
+
+    <!-- Monitor -->
+    <rect x="320" y="186" width="142" height="108" rx="16" stroke="url(#accentStroke)" stroke-width="14"/>
+    <rect x="344" y="209" width="94" height="62" rx="4" fill="#F7FBFF" fill-opacity="0.08"/>
+    <rect x="375" y="294" width="32" height="30" rx="8" fill="url(#accentStroke)"/>
+    <rect x="348" y="319" width="86" height="20" rx="10" fill="url(#accentStroke)"/>
+  </g>
+</svg>
