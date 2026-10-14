@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#ffffff">
   <title>横山晴紀のポートフォリオ | ゲームプログラマー</title>
   <link rel="icon" href="assets/favicon.svg?v=hy" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=modal-touch-focus-20261014">
   <script src="data/works.js" defer></script>
   <script src="data/skills.js" defer></script>
   <script src="data/about.js" defer></script>
@@ -16,7 +16,7 @@
   <script src="about.js" defer></script>
   <script src="contact.js" defer></script>
   <script src="background.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="app.js?v=modal-touch-focus-20261014" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">本文へスキップ</a>
@@ -68,14 +68,15 @@
       <noscript><p class="section-note">Skillsを見るにはJavaScriptを有効にしてください。</p></noscript>
     </section>
     <section class="section works-section" id="works" aria-labelledby="works-title">
-      <div class="wrap section-heading reveal"><h2 id="works-title" class="display-heading">Works</h2><p class="sample-note" id="collection-label">掲載中の作品は仮データです。</p></div>
-      <div class="carousel reveal" role="region" aria-roledescription="カルーセル" aria-label="Works" tabindex="0">
-        <div class="carousel-stage" id="carousel-stage"></div>
-        <div class="carousel-controls wrap"><button class="circle-button" id="previous-work" aria-label="前の作品">&lt;</button><p class="work-counter"><span id="work-current">01</span><span class="counter-divider">/</span><span id="work-total">04</span></p><button class="circle-button" id="next-work" aria-label="次の作品">&gt;</button></div>
-        <p class="sr-only" id="carousel-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <div class="wrap section-heading works-heading reveal">
+        <div class="works-heading-copy"><h2 id="works-title" class="display-heading">Works</h2><p class="sample-note" id="collection-label">掲載中の作品は仮データです。</p></div>
+        <div class="works-sort-controls" role="group" aria-label="作品の並び順">
+          <button class="works-sort-button" type="button" data-sort-order="recommended" aria-pressed="true">おすすめ順</button>
+          <button class="works-sort-button" type="button" data-sort-order="chronological" aria-pressed="false">時系列順</button>
+        </div>
       </div>
-      <div class="wrap work-details" id="work-details"></div>
-      <noscript><p class="wrap">作品のカルーセルを見るにはJavaScriptを有効にしてください。</p></noscript>
+      <div class="works-grid wrap" id="works-grid"></div>
+      <noscript><p class="wrap section-note">作品を見るにはJavaScriptを有効にしてください。</p></noscript>
     </section>
     <section class="section wrap about-section" id="about" aria-labelledby="about-title">
       <div class="section-heading reveal"><h2 id="about-title">About</h2></div>
