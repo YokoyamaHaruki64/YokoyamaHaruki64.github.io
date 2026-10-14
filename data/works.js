@@ -2,18 +2,22 @@
 // image は一覧用画像。動画は media: { type: "video", src: "assets/work.mp4" } または media: { type: "youtube", url: "https://youtu.be/動画ID" } を任意で設定します。
 // 動画は詳細モーダル内で再生し、YouTubeは埋め込みプレーヤーと外部リンクを表示します。
 // links は { label, url } の配列です。
+// downloads は { label: "Windows版（ZIP）", url: "downloads/game.zip", filename: "game.zip" } の配列です。外部の配布URLも指定でき、filename は省略可能です。
 // awards は { competition: "大会名", result: "銀賞", medal: "silver", year: "2026" } の配列です。result と year は省略可能です。
+// index の小さい順に表示し、同じ index はこの配列で上にある作品を優先します。
 // 実作品に差し替える際は isSample を false にし、期間・体制なども更新します。
 window.PORTFOLIO_WORKS = [
   {
     id: "furisuru-furisuru",
+    index: 0,
     title: "ふりするフリスル",
     category: "2D Action",
-    image: "assets/furisuru-title.png",
-    imageAlt: "ゲームタイトル「ふりするフリスル」のロゴ",
+    image: "assets/works/furisuru-title.png",
+    imageAlt: "ゲーム「ふりするフリスル」のタイトル画面",
+    media: { type: "youtube", url: "https://youtu.be/Qo8GYWGb5pU" },
     isSample: false,
     tagline: "はねて、ふりして、飛びまわれ！",
-    summary: "チーム制作で開発した2Dアクションゲーム。リードプログラマーを務め、コード管理や全体の設計、プレイヤーを主に担当しました。",
+    summary: "チームで制作した2Dアクションゲーム。リードプログラマーを務め、コード管理や全体の設計、プレイヤーを主に担当しました。",
     role: "リードプログラマー / コード管理 / 2D簡易物理 / 描画 / フレームワーク設計・実装 / プレイヤー操作 / ステージエディタ制作",
     technologies: ["DirectX11", "C++", "Git", "GitHub"],
     period: "4ヶ月（2025年10月～2026年3月）",
@@ -24,78 +28,111 @@ window.PORTFOLIO_WORKS = [
     ],
     points: ["初めてのチーム制作でリードプログラマーとして制作を牽引", "フレームワークやそれに伴う描画と物理演算の実装、ステージエディタの制作まで幅広く担当", "入力バッファや操作方法などを検討し、プレイヤーの操作感を改善"],
     details: [
-      { heading: "担当範囲", text: "リードプログラマーとして、プログラム全体の管理と制作進行を担当しました。担当内容は多岐にわたり、描画、物理を含むフレームワーク全般やステージエディタなども担当しました。また、プレイヤーの動作を実装し、操作感を調整しました。" },
-      { heading: "エピソード", text: "マスターアップ1か月前に大幅な仕様変更の提案があり、変更に対するリスクヘッジや、面白さを確認する期限を設け、専用のブランチを切って検証を行いました。結果、変更は採用となり、より直感的で楽しいゲームになりました。" }
+      {
+        heading: "担当範囲",
+        text: "リードプログラマーとして、プログラム全体の管理と制作進行を担当しました。担当内容は多岐にわたり、描画、物理を含むフレームワーク全般やステージエディタなども担当しました。また、プレイヤーの動作を実装し、操作感を調整しました。"
+      },
+      {
+        heading: "フレームワークについて",
+        text: "チームで開発するため、授業で学んだことを実際のプロジェクトで使うという思想のもと、フレームワークを設計・実装しました。\nGameObjectを継承する形で作ったため、拡張性が低く反省点となりましたが、チームでの開発を通して、フレームワーク設計の重要性を学ぶことができました。"
+      },
+      {
+        heading: "プレイヤー操作について",
+        text: "本作の肝であるプレイヤー操作の実装を担当しました。ゲーム特有のアクションが多く、どう操作するのが直感的で楽しいかを検討し、数値調整やステート管理を行いました。結果、もちもちとしたプレイヤーの表現と、操作感の良いゲームに仕上げることができました。"
+      },
+      {
+        heading: "物理演算について",
+        text: "2Dの簡易物理演算を実装しました。衝突判定はSATによるOBBと円形の判定を実装し、衝突解決は反発係数を考慮した速度の反射と、重なりを解消する位置補正のみを行いました。"
+      },
+      {
+        heading: "ステージエディタについて",
+        text: "あるゲームを参考にステージエディタを制作しました。タイル単位で配置し、json形式で保存・読み込みを行うようにしました。このエディタによって複数のステージを制作でき、ボリュームアップやバランス調整に役立ちました。"
+      },
+      {
+        heading: "チーム制作エピソード",
+        text: "マスターアップ1か月前に大幅な仕様変更の提案があり、変更に対するリスクヘッジや、面白さを確認する期限を設け、専用のブランチを切って検証を行いました。結果、変更は採用となり、より直感的で楽しいゲームになりました。"
+      }
+    ],
+    downloads: [],
+    links: []
+  },
+  {
+    id: "machina-drive",
+    index: 1,
+    title: "Machina Drive",
+    category: "3D Action",
+    image: "assets/works/machinadrive-title.png",
+    imageAlt: "ゲーム「Machina Drive」のタイトル画面",
+    media: { type: "youtube", url: "https://youtu.be/Tlb3Cqbm5iI" },
+    isSample: false,
+    tagline: "あがけ、最後の一瞬まで",
+    summary: "個人制作の3Dアクションゲーム。制限時間が迫る中、敵に突進して倒していくゲームです。操作をシンプルにし、画面演出などで爽快感を演出することを意識しました。",
+    role: "個人制作",
+    technologies: ["DirectX11", "C++", "ImGui" ,"Git", "GitHub"],
+    period: "エディタ制作:2週間 / ゲーム制作:2週間（2026年8月~9月）",
+    team: "個人制作",
+    platform: "Windows11",
+    awards: [],
+    points: ["ゲームエディタの制作", "ShaderLab風独自ShaderDSLの開発", "PostProcess演出の実装"],
+    details: [
+      { heading: "エディタについて",
+        text: "Unityのエディタ機能を参考に、独自のゲームエディタを制作しました。GUIはImGuiで構築し、下記の機能などを実装しました。"
+      },
+      { heading: "エディタ機能-01 独自ShaderDSL",
+        text: "ShaderLabを参考に、HLSLを記述できる独自のShaderDSLを設計・実装しました。全てのShaderをこれで記述し、PostProcessも簡単に追加できました"
+      },
+      { heading: "エディタ機能-02 Serialize",
+        text: "SceneやPrefabなどのデータをシリアライズして保存・復元する機能を実装しました。C++のまま型を推論してデータを扱っています。"
+      },
+      { heading: "エディタ機能-03 EditorGUI",
+        text: "各オブジェクトのプロパティを表示・編集する機能を実装しました。前述のSerializerと連携して、データの変更を即座に反映させます。"
+      },
+      { heading: "AgentAIの活用",
+        text: "今回の制作から本格的にAIを活用し、自分で設計をし、AIが実装を行うプロセスを構築しました。"
+      },
+      { heading: "次の課題",
+        text: "エディタとゲーム部分が密結合になっているなど、責務分離に問題がありました。現在はその反省を生かし、別のプロジェクトでエンジン部分の開発を行っています。"
+      }
+    ],
+    downloads: [
+      {
+        label: "Machina Drive(Google Drive)",
+        url: "https://drive.google.com/drive/folders/1urZIzihgiL7bzM6LJLNKrzfIriVBvgNI?usp=sharing",
+        filename: "MachinaDrive.zip"
+      }
     ],
     links: []
   },
   {
-    id: "prism-puzzle",
-    title: "Prism Puzzle",
-    category: "PUZZLE",
-    image: "assets/work-prism.svg",
-    imageAlt: "紫色の立体ブロックを組み合わせた仮作品のイメージ",
-    isSample: true,
-    tagline: "組み合わせから、答えを見つける。",
-    summary: "ブロックを組み替えて道をつなぐパズル。盤面管理と、操作に応じたフィードバックを想定しています。",
-    role: "盤面管理 / パズル判定 / UI（想定）",
+    id: "rockrock-explosion",
+    index: 2,
+    title: "RockRock☆Explosion!!",
+    category: "3D Action",
+    image: "assets/works/rockrockexplosion-title.png",
+    imageAlt: "ゲーム「RockRock☆Explosion!!」のタイトル画面",
+    media: { type: "youtube", url: "https://youtu.be/jlnMevfWygQ" },
+    isSample: false,
+    tagline: "今日からキミもボマー！",
+    summary: "爆弾を投げて敵を爆破する3Dアクションローグライト。爆風による吹っ飛びやプレイヤーアクションによる爽快感を重視して制作しました。",
+    role: "個人制作",
     technologies: ["Unity", "C#"],
-    period: "未設定",
-    team: "チーム制作（想定・人数未設定）",
-    platform: "Windows（想定）",
-    awards: [],
-    points: ["盤面データと見た目を分離する構成", "取り消し・やり直しを扱う操作履歴の管理"],
+    period: "約2週間(2024年12月末～2025年1月)",
+    team: "個人制作",
+    platform: "Windows11",
+    awards: [
+      { competition: "1年次冬HAL三校合同コンテスト", result: "銀賞", medal: "silver", year: "2025"}],
+    points: ["3種類の爆弾の使い分け", "敵の群れを吹き飛ばす爽快感", "爆風を利用したプレイヤーアクション"],
     details: [
-      { heading: "担当範囲", text: "盤面の状態管理、クリア判定、操作UIを担当する想定です。実作品では自分の担当範囲が分かる画面や処理図を添えてください。" },
-      { heading: "課題と設計", text: "パズルのルール追加に対応するため、盤面の状態と表示を独立させる設計例です。操作履歴を保存し、取り消しや再実行へ利用する構成を想定しています。" },
-      { heading: "検証・次の課題", text: "境界条件での判定や操作履歴の整合性を検証する欄です。現時点では実装・計測結果はありません。" }
+        {
+          heading: "ゲーム体験",
+          text: "大量の敵を倒すようなゲームを作りたい！から始まり、大量に敵を倒せるもの→爆弾という発想になりました。爆風で敵を吹き飛ばす処理とパラメータを最後まで調整し、爽快感を重視したゲーム体験を目指しました。"
+        },
+        {
+          heading: "爆風アクション",
+          text: "プレイヤーはダメージを受けずに爆風で吹っ飛ぶことができます。爆風の吹き飛びを利用して、高くジャンプするというアクションを実装しました。爆風のパラメータは敵とプレイヤーでそれぞれ調整し、操作感と爽快感を両立させました。"
+        }
     ],
-    links: []
-  },
-  {
-    id: "little-garden",
-    title: "Little Garden",
-    category: "SIMULATION",
-    image: "assets/work-garden.svg",
-    imageAlt: "緑の木々と小さな庭を描いた仮作品のイメージ",
-    isSample: true,
-    tagline: "小さな世界を、育てていく。",
-    summary: "小さな庭を育てるシミュレーション。時間経過による変化と、セーブ・ロードを想定しています。",
-    role: "成長システム / セーブ・ロード（想定）",
-    technologies: ["Unity", "C#", "JSON"],
-    period: "未設定",
-    team: "個人制作（想定）",
-    platform: "Windows（想定）",
-    awards: [],
-    points: ["成長パラメータをデータで管理", "保存データのバージョンと互換性を考慮"],
-    details: [
-      { heading: "担当範囲", text: "植物の成長、時間管理、セーブとロードを実装する想定です。ゲーム全体の中で担当機能が果たす役割を説明する欄です。" },
-      { heading: "課題と設計", text: "植物の種類を増やしやすいよう、成長条件を独立したデータとして管理する構成例です。セーブデータの更新や欠損への対応方針も記載します。" },
-      { heading: "検証・次の課題", text: "長時間経過時の挙動や保存・復元の検証結果を掲載する欄です。現時点では実装・計測結果はありません。" }
-    ],
-    links: []
-  },
-  {
-    id: "render-lab",
-    title: "Render Lab",
-    category: "TECHNICAL DEMO",
-    image: "assets/work-render.svg",
-    imageAlt: "黄色のワイヤーフレームを描いた仮の描画デモのイメージ",
-    isSample: true,
-    tagline: "画面の向こうの、仕組みを知る。",
-    summary: "シェーダーや描画処理を試す技術デモ。表現と処理負荷を比較する作品案です。",
-    role: "描画処理 / シェーダー / 計測（想定）",
-    technologies: ["C++", "DirectX", "HLSL"],
-    period: "未設定",
-    team: "個人制作（想定）",
-    platform: "Windows（想定）",
-    awards: [],
-    points: ["描画パスの責務とデータの流れを整理", "同一条件で表現と処理負荷を比較"],
-    details: [
-      { heading: "担当範囲", text: "描画処理とシェーダーの実装、表示結果の比較を行う想定です。技術検証としての目的と対象範囲を記載します。" },
-      { heading: "課題と設計", text: "見た目と描画コストのバランスを検証するサンプルです。パラメータを変更しやすくし、比較条件をそろえる方針を想定しています。" },
-      { heading: "検証・次の課題", text: "計測環境、フレーム時間、画質の比較を載せる欄です。現時点では実装・計測結果はありません。" }
-    ],
+    downloads: [{ label: "RockRock☆Explosion!!(Google Drive)", url: "https://drive.google.com/drive/folders/1l0LEQuMpkzTEpCkzu4L6_PrNoDAIdLIn?usp=sharing", filename: "RockRockExplosion.zip" }],
     links: []
   }
 ];

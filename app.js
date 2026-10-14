@@ -2,7 +2,14 @@
   "use strict";
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const works = window.PORTFOLIO_WORKS ?? [];
+  const works = (window.PORTFOLIO_WORKS ?? [])
+    .map((work, sourceOrder) => ({ work, sourceOrder }))
+    .sort((a, b) => {
+      const indexA = Number.isInteger(a.work.index) && a.work.index >= 0 ? a.work.index : Number.MAX_SAFE_INTEGER;
+      const indexB = Number.isInteger(b.work.index) && b.work.index >= 0 ? b.work.index : Number.MAX_SAFE_INTEGER;
+      return indexA - indexB || a.sourceOrder - b.sourceOrder;
+    })
+    .map(({ work }) => work);
   const stage = document.querySelector("#carousel-stage");
   const carousel = document.querySelector(".carousel");
   const detail = document.querySelector("#work-details");
@@ -26,6 +33,13 @@
   const escapeHTML = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character]));
   const wrapIndex = (index) => ((index % works.length) + works.length) % works.length;
   const number = (value) => String(value).padStart(2, "0");
+  const workURL = (work) => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("preview");
+    url.searchParams.set("work", work.id);
+    url.hash = "works";
+    return url;
+  };
   const tags = (work) => (work.technologies ?? []).map((technology) => `<span class="tech-tag">${escapeHTML(technology)}</span>`).join("");
   const categoryTag = (work) => work.category ? `<p class="work-category">${escapeHTML(work.category)}</p>` : "";
   const sampleLabel = (work) => work.isSample ? '<p class="sample-note">仮作品</p>' : "";
@@ -51,6 +65,16 @@
       const allowed = ["https:", "http:"];
       if (image) allowed.push("file:");
       return allowed.includes(url.protocol) ? url.href : "";
+    } catch {
+      return "";
+    }
+  }
+
+  function externalTarget(value) {
+    try {
+      return new URL(value, location.href).origin !== location.origin
+        ? 'target="_blank" rel="noopener noreferrer"'
+        : "";
     } catch {
       return "";
     }
@@ -90,7 +114,7 @@
       const videoId = youtubeVideoId(media.url);
       if (videoId) {
         const youtubeURL = `https://www.youtube.com/watch?v=${videoId}`;
-        return `<div class="dialog-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}?playsinline=1" title="${title} の動画" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div><a class="text-link dialog-video-link" href="${youtubeURL}" target="_blank" rel="noopener noreferrer">YouTubeで見る <span aria-hidden="true">↗</span></a>`;
+        return `<div class="dialog-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&controls=1&playsinline=1" title="${title} の動画" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div><a class="text-link dialog-video-link" href="${youtubeURL}" target="_blank" rel="noopener noreferrer">YouTubeで見る <span aria-hidden="true">↗</span></a>`;
       }
     }
 
@@ -232,11 +256,18 @@
     return destination + cycle * works.length;
   }
 
-  function openDialog(event) {
+  function openDialog(event, updateURL = true) {
     if (moving || dialog.open || !works.length) return;
     const work = works[current];
-    dialogOpener = event?.currentTarget ?? document.activeElement;
+    dialogOpener = event?.currentTarget ?? slots.find((slot) => slot.position === 0)?.element ?? document.activeElement;
+    clearTimeout(shareStatusTimer);
+    shareStatus.classList.remove("is-visible");
+    shareStatus.textContent = "";
+    if (updateURL) {
+      history.pushState({ ...(history.state ?? {}), portfolioWork: work.id }, "", workURL(work));
+    }
     const links = (work.links ?? []).filter((link) => safeURL(link.url));
+    const downloads = (work.downloads ?? []).filter((item) => typeof item.url === "string" && item.url.trim() && safeURL(item.url, true));
     const awards = awardsMarkup(work.awards);
     dialogContent.innerHTML = `
       ${sampleLabel(work)}
@@ -257,6 +288,7 @@
         <ul>${(work.points ?? []).map((point) => `<li>${escapeHTML(point)}</li>`).join("")}</ul>
       </section>
       ${(work.details ?? []).map((block) => `<section class="dialog-block"><h3>${escapeHTML(block.heading)}</h3><p>${escapeHTML(block.text)}</p></section>`).join("")}
+      ${downloads.length ? `<section class="dialog-block"><h3>ダウンロード</h3><div class="dialog-downloads">${downloads.map((item) => { const url = safeURL(item.url, true); return `<a class="download-link" href="${escapeHTML(url)}" ${externalTarget(url)} download="${escapeHTML(item.filename ?? "")}"><span aria-hidden="true">↓</span>${escapeHTML(item.label || "実行ファイルをダウンロード")}</a>`; }).join("")}</div></section>` : ""}
       ${links.length ? `<div class="dialog-block dialog-links">${links.map((link) => `<a class="text-link" href="${escapeHTML(safeURL(link.url))}" target="_blank" rel="noopener noreferrer">${escapeHTML(link.label)} <span aria-hidden="true">↗</span></a>`).join("")}</div>` : ""}
     `;
     setupImages(dialogContent);
@@ -270,12 +302,48 @@
     dialog.querySelector(".dialog-close").focus({ preventScroll: true });
   }
 
-  function closeDialog() {
+  function showWorkFromURL() {
+    const requestedId = new URL(window.location.href).searchParams.get("work");
+    if (!requestedId) {
+      closeDialog(true);
+      return;
+    }
+
+    const workIndex = works.findIndex((work) => work.id === requestedId);
+    if (workIndex < 0) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("work");
+      history.replaceState(history.state, "", url);
+      closeDialog(true);
+      return;
+    }
+    if (dialog.open) return;
+
+    current = workIndex;
+    target = workIndex;
+    trackPosition = workIndex;
+    trackVelocity = 0;
+    updatePanelWindow(workIndex);
+    slots.forEach((slot) => positionPanel(slot, 0, 0));
+    renderDetails(false);
+    openDialog(undefined, false);
+  }
+
+  function closeDialog(fromHistory = false) {
     if (dialogClosing || !dialog.open) return;
     dialogClosing = true;
     dialog.classList.remove("is-open");
     dialogContent.querySelectorAll("video").forEach((video) => video.pause());
     dialogContent.querySelectorAll("iframe").forEach((frame) => { frame.src = "about:blank"; });
+    if (!fromHistory) {
+      const url = new URL(window.location.href);
+      const workId = url.searchParams.get("work");
+      if (workId && history.state?.portfolioWork === workId) history.back();
+      else if (workId) {
+        url.searchParams.delete("work");
+        history.replaceState(history.state, "", url);
+      }
+    }
     window.setTimeout(() => {
       dialog.close();
       document.body.classList.remove("modal-open");
@@ -285,8 +353,45 @@
     }, reducedMotion.matches ? 0 : 280);
   }
 
-  dialog.querySelector(".dialog-close").addEventListener("click", closeDialog);
+  dialog.querySelector(".dialog-close").addEventListener("click", () => closeDialog());
   dialog.addEventListener("cancel", (event) => { event.preventDefault(); closeDialog(); });
+  window.addEventListener("popstate", showWorkFromURL);
+
+  async function copyShareURL(url) {
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(url);
+        return true;
+      } catch {}
+    }
+
+    const field = document.createElement("textarea");
+    field.value = url;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.append(field);
+    field.select();
+    const copied = document.execCommand("copy");
+    field.remove();
+    return copied;
+  }
+
+  const shareButton = dialog.querySelector(".dialog-share");
+  const shareStatus = dialog.querySelector(".dialog-share-status");
+  let shareStatusTimer;
+  shareButton.addEventListener("click", async () => {
+    const work = works[current];
+    const url = workURL(work).href;
+    const copied = await copyShareURL(url);
+    shareStatus.textContent = copied ? "リンクをコピーしました！" : "コピーに失敗しました";
+    shareStatus.classList.add("is-visible");
+    clearTimeout(shareStatusTimer);
+    shareStatusTimer = window.setTimeout(() => {
+      shareStatus.classList.remove("is-visible");
+    }, 2400);
+  });
+
   let backdropPressed = false;
   const outsideDialog = (event) => {
     const bounds = dialog.getBoundingClientRect();
@@ -342,7 +447,9 @@
 
   stage.addEventListener("pointerdown", (event) => {
     if (!event.isPrimary || event.button !== 0 || moving || works.length < 2) return;
-    gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0, dragging: false };
+    const centerPanel = slots.find((slot) => slot.position === 0);
+    const stepWidth = (centerPanel?.element.offsetWidth ?? stage.clientWidth) * .89;
+    gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0, startPosition: target, stepWidth, dragging: false };
   });
   stage.addEventListener("pointermove", (event) => {
     if (!gesture || event.pointerId !== gesture.id) return;
@@ -357,8 +464,9 @@
     }
     if (gesture.dragging) {
       gesture.dx = dx;
-      const limit = stage.clientWidth * .25;
-      slots.forEach((slot) => positionPanel(slot, Math.max(-limit, Math.min(limit, dx))));
+      trackPosition = gesture.startPosition - dx / gesture.stepWidth;
+      updatePanelWindow(Math.round(trackPosition));
+      slots.forEach((slot) => positionPanel(slot, 0, trackPosition - centerStep));
     }
   });
 
@@ -368,11 +476,22 @@
     gesture = null;
     if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
     stage.classList.remove("is-dragging");
-    slots.forEach((slot) => slot.element.classList.remove("is-repositioning"));
     if (completed.dragging) {
       suppressClickUntil = performance.now() + 400;
-      if (event.type === "pointerup" && Math.abs(completed.dx) > Math.min(60, stage.clientWidth * .1)) goTo(target + (completed.dx < 0 ? 1 : -1));
-      else slots.forEach((slot) => positionPanel(slot));
+      if (event.type === "pointerup") completed.dx = event.clientX - completed.x;
+      trackPosition = completed.startPosition - completed.dx / completed.stepWidth;
+      updatePanelWindow(Math.round(trackPosition));
+      slots.forEach((slot) => positionPanel(slot, 0, trackPosition - centerStep));
+
+      const threshold = Math.min(60, stage.clientWidth * .1);
+      const shouldAdvance = event.type === "pointerup" && Math.abs(completed.dx) > threshold;
+      const steps = shouldAdvance ? Math.max(1, Math.round(Math.abs(completed.dx) / completed.stepWidth)) : 0;
+      const destination = completed.startPosition + (completed.dx < 0 ? steps : -steps);
+
+      // 解放位置から、現在または移動先の作品中央へ吸着させます。
+      goTo(destination);
+    } else {
+      slots.forEach((slot) => slot.element.classList.remove("is-repositioning"));
     }
   }
 
@@ -408,10 +527,39 @@
 
   const sections = [...document.querySelectorAll("main > section[id]")];
   const navLinks = [...document.querySelectorAll(".nav a")];
+  const nav = document.querySelector("#site-nav");
+  const menuToggle = document.querySelector("#menu-toggle");
   const progress = document.querySelector(".reading-progress");
   let scrollQueued = false;
 
+  function closeNavigationMenu(restoreFocus = false) {
+    nav.classList.remove("is-open");
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.setAttribute("aria-label", "メニューを開く");
+    if (restoreFocus) menuToggle.focus();
+  }
+
+  menuToggle.addEventListener("click", () => {
+    const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
+    nav.classList.toggle("is-open", !isOpen);
+    menuToggle.setAttribute("aria-expanded", String(!isOpen));
+    menuToggle.setAttribute("aria-label", isOpen ? "メニューを開く" : "メニューを閉じる");
+  });
+
+  navLinks.forEach((link) => link.addEventListener("click", () => closeNavigationMenu(true)));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && menuToggle.getAttribute("aria-expanded") === "true") {
+      closeNavigationMenu(true);
+    }
+  });
+  document.addEventListener("click", (event) => {
+    if (menuToggle.getAttribute("aria-expanded") === "true" && !nav.contains(event.target) && !menuToggle.contains(event.target)) {
+      closeNavigationMenu();
+    }
+  });
+
   function updateScroll() {
+    if (window.innerWidth > 700 && menuToggle.getAttribute("aria-expanded") === "true") closeNavigationMenu();
     const headerHeight = document.querySelector(".site-header").offsetHeight;
     let active = sections[0].id;
     for (const section of sections) {
@@ -433,5 +581,12 @@
   window.addEventListener("resize", updateScroll);
   const copyrightYear = document.querySelector("#copyright-year");
   if (copyrightYear) copyrightYear.textContent = new Date().getFullYear();
+  const initialWorkId = new URL(window.location.href).searchParams.get("work");
+  if (initialWorkId && history.state?.portfolioWork === initialWorkId) {
+    const state = { ...history.state };
+    delete state.portfolioWork;
+    history.replaceState(state, "", window.location.href);
+  }
+  showWorkFromURL();
   updateScroll();
 })();
