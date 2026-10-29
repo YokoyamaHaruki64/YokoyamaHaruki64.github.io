@@ -151,5 +151,227 @@ window.PORTFOLIO_WORKS = [
       }
     ],
     links: []
-  }
+  },
+  {
+    id: "full-burst",
+    index: 3,
+    chronologicalIndex: 2,
+    title: "Full Burst!!",
+    category: "3D Action",
+    image: "assets/works/fullburst-title.png",
+    imageAlt: "ゲーム「Full Burst!!」のタイトル画面",
+    media: {},
+    isSample: false,
+    isTeam: false,
+    mainTools: ["C++", "DirectX11"],
+    tagline: "放て、フルバースト！",
+    summary: "ボスとの戦闘に特化した3Dアクションゲーム。ボス挙動やプレイヤーの攻撃のヒット感を強く意識して制作しました。",
+    role: "個人制作",
+    technologies: ["C++", "DirectX11"],
+    period: { duration: "2週間", timing: "2025年12月末〜2026年1月" },
+    team: "個人制作",
+    platform: "Windows11",
+    awards: [
+      { competition: "2年次冬HAL三校合同コンテスト", result: "技術力賞", year: "2026"}],
+    points: ["3種類の爆弾の使い分け", "敵の群れを吹き飛ばす爽快感", "爆風を利用したプレイヤーアクション"],
+    details: [
+        {
+          heading: "ゲーム体験",
+          text: "大量の敵を倒すようなゲームを作りたい！から始まり、大量に敵を倒せるもの→爆弾という発想になりました。爆風で敵を吹き飛ばす処理とパラメータを最後まで調整し、爽快感を重視したゲーム体験を目指しました。"
+        },
+        {
+          heading: "爆風アクション",
+          text: "プレイヤーはダメージを受けずに爆風で吹っ飛ぶことができます。爆風の吹き飛びを利用して、高くジャンプするというアクションを実装しました。爆風のパラメータは敵とプレイヤーでそれぞれ調整し、操作感と爽快感を両立させました。"
+        }
+    ],
+    downloads: [
+    ],
+    links: []
+  },
+  {
+    id: "accel-arc",
+    index: 4,
+    chronologicalIndex: 2,
+    title: "ACCEL ARC",
+    category: "2D Action",
+    image: "assets/works/accelarc-title.jpg",
+    imageAlt: "ゲーム「ACCEL ARC」のタイトル画面",
+    media: { },
+    isSample: false,
+    isTeam: false,
+    mainTools: ["C++", "Nintendo Switch"],
+    tagline: "放て、レールガン！",
+    summary: "Nintendo Switch向けに制作した2Dアクションゲーム。レールガンを打つ際の演出を強く意識して制作しました。",
+    role: "個人制作",
+    technologies: ["C++", "Nintendo Switch"],
+    period: { duration: "2週間", timing: "2025年9月" },
+    team: "個人制作",
+    platform: "Nintendo Switch",
+    awards: [],
+    points: ["3種類の爆弾の使い分け", "敵の群れを吹き飛ばす爽快感", "爆風を利用したプレイヤーアクション"],
+    details: [
+        {
+          heading: "ゲーム体験",
+          text: "大量の敵を倒すようなゲームを作りたい！から始まり、大量に敵を倒せるもの→爆弾という発想になりました。爆風で敵を吹き飛ばす処理とパラメータを最後まで調整し、爽快感を重視したゲーム体験を目指しました。"
+        },
+        {
+          heading: "爆風アクション",
+          text: "プレイヤーはダメージを受けずに爆風で吹っ飛ぶことができます。爆風の吹き飛びを利用して、高くジャンプするというアクションを実装しました。爆風のパラメータは敵とプレイヤーでそれぞれ調整し、操作感と爽快感を両立させました。"
+        }
+    ],
+    downloads: [
+      {
+      }
+    ],
+    links: []
+  },
+  {
+    id: "nexustone",
+    index: 5,
+    chronologicalIndex: 2,
+    title: "NEXSUSTONE",
+    category: "2D Puzzle",
+    image: "assets/works/nexustone-title.png",
+    imageAlt: "ゲーム「NEXSUSTONE」のタイトル画面",
+    media: {},
+    isSample: false,
+    isTeam: false,
+    mainTools: ["C++", "DirectX11"],
+    tagline: "",
+    summary: "落ち物パズルゲーム。落ちてくるブロックを消すだけでなく、消したブロックによってチャージして攻撃することでスコアを獲得できます。",
+    role: "個人制作",
+    technologies: ["C++", "DirectX11"],
+    period: { duration: "2週間", timing: "2025年9月" },
+    team: "個人制作",
+    platform: "Windows11",
+    awards: [],
+    points: ["3種類の爆弾の使い分け", "敵の群れを吹き飛ばす爽快感", "爆風を利用したプレイヤーアクション"],
+    details: [
+        {
+          heading: "ゲーム体験",
+          text: "大量の敵を倒すようなゲームを作りたい！から始まり、大量に敵を倒せるもの→爆弾という発想になりました。爆風で敵を吹き飛ばす処理とパラメータを最後まで調整し、爽快感を重視したゲーム体験を目指しました。"
+        },
+        {
+          heading: "爆風アクション",
+          text: "プレイヤーはダメージを受けずに爆風で吹っ飛ぶことができます。爆風の吹き飛びを利用して、高くジャンプするというアクションを実装しました。爆風のパラメータは敵とプレイヤーでそれぞれ調整し、操作感と爽快感を両立させました。"
+        }
+    ],
+    downloads: [
+      {
+      }
+    ],
+    links: []
+  },
+  {
+    id: "stronglongjump",
+    index: 6,
+    chronologicalIndex: 2,
+    title: "Strong Long Jump",
+    category: "3D Minigame",
+    image: "assets/works/stronglongjump-title.png",
+    imageAlt: "ゲーム「Strong Long Jump」のタイトル画面",
+    media: {  },
+    isSample: false,
+    isTeam: false,
+    mainTools: ["Unreal Engine"],
+    tagline: "目指せ最高の「ダン！！」",
+    summary: "UE5ぷちコンで制作した3Dミニゲーム。走り幅跳びの踏切をテーマ「だん」として、より遠くへ飛ぶことを目指すゲームです。",
+    role: "個人制作",
+    technologies: ["Unreal Engine"],
+    period: { duration: "1週間", timing: "2026年9月" },
+    team: "個人制作",
+    platform: "Windows11",
+    awards: [],
+    points: ["3種類の爆弾の使い分け", "敵の群れを吹き飛ばす爽快感", "爆風を利用したプレイヤーアクション"],
+    details: [
+        {
+          heading: "ゲーム体験",
+          text: "大量の敵を倒すようなゲームを作りたい！から始まり、大量に敵を倒せるもの→爆弾という発想になりました。爆風で敵を吹き飛ばす処理とパラメータを最後まで調整し、爽快感を重視したゲーム体験を目指しました。"
+        },
+        {
+          heading: "爆風アクション",
+          text: "プレイヤーはダメージを受けずに爆風で吹っ飛ぶことができます。爆風の吹き飛びを利用して、高くジャンプするというアクションを実装しました。爆風のパラメータは敵とプレイヤーでそれぞれ調整し、操作感と爽快感を両立させました。"
+        }
+    ],
+    downloads: [
+      {
+      }
+    ],
+    links: []
+  },
+  {
+    id: "chronos-shot",
+    index: 7,
+    chronologicalIndex: 2,
+    title: "Chronos Shot",
+    category: "2D Shooting",
+    image: "assets/works/chronosshot-title.png",
+    imageAlt: "ゲーム「Chronos Shot」のタイトル画面",
+    media: {  },
+    isSample: false,
+    isTeam: false,
+    mainTools: ["Unity"],
+    tagline: "時間を操って勝利を掴め！",
+    summary: "初めてUnityで制作した2Dシューティング。時を遅くして弾の間を縫うように避けることで、激しい弾幕を攻略します。",
+    role: "個人制作",
+    technologies: ["Unity"],
+    period: { duration: "3週間", timing: "2024年8月～2024年9月" },
+    team: "個人制作",
+    platform: "Windows11",
+    awards: [ { competition: "1年次夏HAL三校合同コンテスト", result: "技術力賞", year: "2024"} ],
+    points: ["3種類の爆弾の使い分け", "敵の群れを吹き飛ばす爽快感", "爆風を利用したプレイヤーアクション"],
+    details: [
+        {
+          heading: "ゲーム体験",
+          text: "大量の敵を倒すようなゲームを作りたい！から始まり、大量に敵を倒せるもの→爆弾という発想になりました。爆風で敵を吹き飛ばす処理とパラメータを最後まで調整し、爽快感を重視したゲーム体験を目指しました。"
+        },
+        {
+          heading: "爆風アクション",
+          text: "プレイヤーはダメージを受けずに爆風で吹っ飛ぶことができます。爆風の吹き飛びを利用して、高くジャンプするというアクションを実装しました。爆風のパラメータは敵とプレイヤーでそれぞれ調整し、操作感と爽快感を両立させました。"
+        }
+    ],
+    downloads: [
+      {
+      }
+    ],
+    links: []
+  },
+    {
+    id: "suisai-utopia",
+    index: 8,
+    chronologicalIndex: 2,
+    title: "水彩ユートピア",
+    category: "2D Console Action",
+    image: "assets/works/suisaiutopia-title.png",
+    imageAlt: "ゲーム「水彩ユートピア」のタイトル画面",
+    media: {},
+    isSample: false,
+    isTeam: false,
+    mainTools: ["C++"],
+    tagline: "世界を自分色に染め上げろ！",
+    summary: "コンソールで動作する2Dアクション。コンソールでのフルカラー描画を実装し、色を塗り合う陣取りゲームです。",
+    role: "個人制作",
+    technologies: ["C++"],
+    period: { duration: "1ヶ月", timing: "2025年1月～2025年2月" },
+    team: "個人制作",
+    platform: "Windows11",
+    awards: [{ competition: "1年次進級制作展(HAL EVENT WEEK)", result: "プログラミング賞", year: "2025"}],
+    points: ["3種類の爆弾の使い分け", "敵の群れを吹き飛ばす爽快感", "爆風を利用したプレイヤーアクション"],
+    details: [
+        {
+          heading: "ゲーム体験",
+          text: "大量の敵を倒すようなゲームを作りたい！から始まり、大量に敵を倒せるもの→爆弾という発想になりました。爆風で敵を吹き飛ばす処理とパラメータを最後まで調整し、爽快感を重視したゲーム体験を目指しました。"
+        },
+        {
+          heading: "爆風アクション",
+          text: "プレイヤーはダメージを受けずに爆風で吹っ飛ぶことができます。爆風の吹き飛びを利用して、高くジャンプするというアクションを実装しました。爆風のパラメータは敵とプレイヤーでそれぞれ調整し、操作感と爽快感を両立させました。"
+        }
+    ],
+    downloads: [
+      {
+      }
+    ],
+    links: []
+  },
+
 ];
