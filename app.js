@@ -8,9 +8,15 @@
     return sourceWorks
       .map((work, sourceOrder) => ({ work, sourceOrder }))
       .sort((a, b) => {
-        const indexA = Number.isInteger(a.work[indexKey]) && a.work[indexKey] >= 0 ? a.work[indexKey] : Number.MAX_SAFE_INTEGER;
-        const indexB = Number.isInteger(b.work[indexKey]) && b.work[indexKey] >= 0 ? b.work[indexKey] : Number.MAX_SAFE_INTEGER;
-        return indexA - indexB || a.sourceOrder - b.sourceOrder;
+        const hasIndexA = Number.isInteger(a.work[indexKey]) && a.work[indexKey] >= 0;
+        const hasIndexB = Number.isInteger(b.work[indexKey]) && b.work[indexKey] >= 0;
+        if (hasIndexA !== hasIndexB) return hasIndexA ? -1 : 1;
+        if (!hasIndexA) return a.sourceOrder - b.sourceOrder;
+
+        const indexDifference = order === "chronological"
+          ? b.work[indexKey] - a.work[indexKey]
+          : a.work[indexKey] - b.work[indexKey];
+        return indexDifference || a.sourceOrder - b.sourceOrder;
       })
       .map(({ work }) => work);
   }
