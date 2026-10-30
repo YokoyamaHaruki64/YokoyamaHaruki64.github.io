@@ -182,8 +182,16 @@
         <h3 class="work-card-title">${title}</h3>
         ${workTagsMarkup}${periodMarkup}
         <p class="work-card-summary">${escapeHTML(work.summary)}</p>
-        <span class="work-card-footer">${awards}<span class="work-card-more">詳しく見る <span aria-hidden="true">↗</span></span></span>
+        <span class="work-card-footer">${awards}<span class="work-card-more">詳しく見る</span></span>
       </div>
+      <svg class="work-card-curl" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="curl-shadow-${index}" x="-40%" y="-40%" width="180%" height="180%">
+            <feDropShadow class="curl-cast-shadow" dx="2" dy="3" stdDeviation="1.5" flood-color="#000"/>
+          </filter>
+        </defs>
+        <path class="work-card-curl-back" d="M48 0Q24 4 4 4Q4 24 0 48Z" filter="url(#curl-shadow-${index})"/>
+      </svg>
     </a>`;
   }
 

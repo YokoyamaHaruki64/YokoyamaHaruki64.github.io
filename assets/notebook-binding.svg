@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="64" viewBox="0 0 48 64">
+  <circle cx="31" cy="31" r="6" fill="#17222c" fill-opacity=".6" stroke="#879ba6" stroke-opacity=".45" stroke-width="1.5"/>
+  <!-- 奥側は紙端で隠し、手前の弧だけを綴じ穴まで通す -->
+  <path d="M18 37C10 40 3 38 3 32" fill="none" stroke="#4296ae" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M3 32C3 24 31 23 31 31" fill="none" stroke="#65c3d8" stroke-width="4.5" stroke-linecap="round"/>
+</svg>

@@ -200,8 +200,6 @@ dd { margin: 0; font-size: 17px; }
 .work-card-award--bronze { border-color: color-mix(in srgb, #cd8250 55%, var(--surface)); background: color-mix(in srgb, #cd8250 24%, var(--surface)); }
 .work-card-medal { flex: 0 0 15px; width: 15px; height: 19px; }
 .work-card-more { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; color: var(--ink-soft); font-size: 15px; font-weight: 700; white-space: nowrap; }
-.work-card-more span { color: var(--cyan); font-size: 19px; transition: transform .3s var(--ease); }
-.work-card:hover .work-card-more span { transform: translate(2px, -2px); }
 .works-empty { grid-column: 1 / -1; color: var(--muted); }
 .circle-button { display: inline-grid; place-items: center; border: 1px solid var(--ink); border-radius: 50%; width: 48px; height: 48px; flex-shrink: 0; background: transparent; transition: background .3s, transform .35s var(--ease), border-color .3s; font-size: 23px; font-weight: 400; }
 .circle-button:hover { background: var(--cyan-interactive); border-color: var(--cyan-interactive); }
@@ -239,9 +237,6 @@ dd { margin: 0; font-size: 17px; }
 .award-result-group--bronze { color: var(--medal-bronze); }
 .award-result { font-size: 15px; line-height: 1.4; }
 .award-year { color: var(--muted); font-size: 14px; }
-
-.about-section > .section-heading { display: flex; justify-content: flex-end; }
-.about-section > .section-heading h2::before { margin-left: auto; }
 
 /* セクションの端に大きなリングを置き、本文やカードより背面に収める */
 #profile::before, .works-section::after, .about-section::before {
