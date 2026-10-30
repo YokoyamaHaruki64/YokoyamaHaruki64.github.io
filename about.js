@@ -29,21 +29,36 @@
     document.querySelector(selector).replaceChildren(list);
   }
 
-  function renderValues() {
-    const values = entriesWithName(about.values, "title");
-    if (!values.length) return;
-    const fragment = document.createDocumentFragment();
-    values.forEach((value) => {
+  function renderHobbies() {
+    const hobbies = entriesWithName(about.hobbies, "title");
+    const container = document.querySelector("#hobby-features");
+    for (const hobby of hobbies.filter((item) => item.photos?.length)) {
       const article = document.createElement("article");
-      article.className = "info-card principle-card reveal";
-      const body = document.createElement("div");
-      body.append(textElement("h4", "", value.title));
-      if (value.description) body.append(textElement("p", "", value.description));
-      article.append(body);
-      fragment.append(article);
-    });
-    document.querySelector("#values-list").replaceChildren(fragment);
-    document.querySelector("#values-draft-note").hidden = !about.valuesAreDraft;
+      article.className = "info-card hobby-feature reveal";
+      const copy = document.createElement("div");
+      copy.className = "hobby-feature-copy";
+      copy.append(textElement("p", "hobby-feature-label", "趣味"));
+      copy.append(textElement("h3", "", hobby.title));
+      if (hobby.lead) copy.append(textElement("p", "hobby-feature-lead", hobby.lead));
+      if (hobby.description) copy.append(textElement("p", "hobby-feature-description", hobby.description));
+      article.append(copy);
+
+      hobby.photos.forEach((photo, index) => {
+        const figure = document.createElement("figure");
+        figure.className = index === 0 ? "hobby-photo hobby-photo-main" : "hobby-photo hobby-photo-detail";
+        const image = document.createElement("img");
+        image.src = photo.src;
+        image.alt = photo.alt;
+        image.width = photo.width;
+        image.height = photo.height;
+        image.loading = "lazy";
+        figure.append(image);
+        if (photo.caption) figure.append(textElement("figcaption", "", photo.caption));
+        article.append(figure);
+      });
+      container.append(article);
+    }
+    renderPersonalList("#hobbies-list", hobbies.filter((item) => !item.photos?.length));
   }
 
   function renderQualifications() {
@@ -72,8 +87,7 @@
     list.replaceChildren(fragment);
   }
 
-  renderPersonalList("#hobbies-list", about.hobbies);
+  renderHobbies();
   renderPersonalList("#interests-list", about.interests);
-  renderValues();
   renderQualifications();
 })();
