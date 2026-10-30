@@ -1,0 +1,321 @@
+:root {
+  --wrap: 1280px;
+  --composition-cyan: color-mix(in srgb, var(--cyan) 32%, var(--canvas));
+  --composition-green: color-mix(in srgb, var(--ring-green) 22%, var(--canvas));
+  --notebook-rule: color-mix(in srgb, var(--ink) 16%, var(--surface));
+  --paper-edge: color-mix(in srgb, var(--ink) 28%, var(--surface));
+  --paper-under: color-mix(in srgb, #000 8%, var(--surface));
+  --paper-stack: 5px 6px 0 0 var(--paper-under), 5px 6px 0 1px var(--paper-edge);
+  --curl-surface: color-mix(in srgb, var(--surface) 90%, var(--ink));
+}
+
+/* 背景の漂いと、コンテンツの配置を決める円の強さを分ける */
+.background-ring {
+  border-color: color-mix(in srgb, var(--ring-color, var(--cyan)) 6%, var(--canvas));
+}
+
+.hero {
+  --hero-ring-size: clamp(620px, 62vw, 900px);
+  min-height: min(940px, calc(100svh + 40px));
+  grid-template-columns: .95fr 1.05fr;
+  gap: 0;
+  padding-top: calc(var(--header-height) + 100px);
+  padding-bottom: 140px;
+}
+
+.hero::before, .hero::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.hero::before {
+  width: var(--hero-ring-size);
+  height: var(--hero-ring-size);
+  left: calc(var(--hero-ring-size) * -.24);
+  top: 50%;
+  transform: translateY(-46%);
+  border: clamp(36px, 4.5vw, 64px) solid var(--composition-cyan);
+}
+
+.hero::after {
+  width: clamp(130px, 16vw, 230px);
+  height: clamp(130px, 16vw, 230px);
+  right: -3%;
+  top: 110px;
+  border: clamp(14px, 1.8vw, 24px) solid var(--composition-green);
+}
+
+.hero-copy { padding-left: clamp(24px, 3vw, 48px); }
+.hero h1 { font-size: clamp(54px, 6vw, 88px); letter-spacing: -.035em; white-space: nowrap; }
+.hero-role { font-weight: 500; }
+.hero-catch { font-size: clamp(22px, 2vw, 28px); }
+.primary-link { border-radius: 4px; padding-inline: 24px; }
+.hero-visual { width: calc(100% + 40px); margin-left: -40px; transform: translateY(64px); }
+.hero-visual img { border: 0; border-radius: 6px; box-shadow: 0 20px 60px var(--shadow); }
+.hero-image-note { text-align: right; }
+
+.section-heading h2 {
+  font-size: clamp(40px, 4.5vw, 64px);
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: -.045em;
+}
+
+.section-heading h2::before {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--cyan);
+  border-radius: 50%;
+  background: transparent;
+  margin-bottom: 20px;
+}
+
+.profile-layout, .info-card, .qualification-card { border-radius: 6px; }
+.info-card, .qualification-card { border-top: 1px solid var(--line); }
+.profile-photo { border-radius: 4px; }
+#profile::before { top: auto; bottom: -80px; --section-ring-size: clamp(260px, 30vw, 440px); }
+
+.works-section { padding-block: clamp(90px, 9vw, 140px); }
+.works-section::before { background: color-mix(in srgb, var(--cyan) 4%, var(--canvas)); }
+.works-section::after {
+  --section-ring-size: clamp(650px, 82vw, 1200px);
+  border-width: clamp(36px, 5vw, 72px);
+  border-color: var(--composition-cyan);
+  right: calc(var(--section-ring-size) * -.42);
+  top: calc(var(--section-ring-size) * -.28);
+}
+
+.works-heading { min-height: 180px; align-items: center; margin-bottom: 64px; }
+.section-heading .display-heading { font-size: clamp(80px, 10vw, 140px); line-height: 1; letter-spacing: -.065em; }
+.works-sort-controls { background: var(--surface); }
+.works-grid { gap: 48px; }
+.work-card { border: 0; border-radius: 6px; }
+.work-card:hover::before { box-shadow: 0 18px 44px var(--shadow); }
+.work-card:hover { box-shadow: none; }
+.work-card-body { padding: 26px 28px 30px; }
+.work-card-title { font-size: clamp(24px, 2.3vw, 32px); }
+.work-card-image-arrow { width: 48px; height: 48px; }
+
+.about-section::before {
+  --section-ring-size: clamp(400px, 50vw, 760px);
+  top: -120px;
+  border-width: clamp(26px, 3vw, 44px);
+  border-color: color-mix(in srgb, var(--ring-yellow) 24%, var(--canvas));
+}
+
+/* リングの奥側は紙端で隠れる形。高さに応じて同じ間隔で綴じる */
+.info-card, .qualification-card, .profile-layout {
+  --notebook-margin: 36px;
+  padding: 30px 28px 32px 60px;
+  border: 1px solid var(--paper-edge);
+  border-radius: 4px;
+  box-shadow: var(--paper-stack);
+}
+
+.info-card::before, .qualification-card::before, .profile-layout::before,
+.work-card-body::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: -19px;
+  width: 48px;
+  background: url("assets/notebook-binding.svg") left top / 48px 64px repeat-y;
+  background-repeat: no-repeat round;
+  pointer-events: none;
+}
+
+.info-card::after, .qualification-card::after, .profile-layout::after,
+.work-card-body::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--notebook-margin, 36px);
+  width: 1px;
+  background: var(--notebook-rule);
+  pointer-events: none;
+}
+
+.personal-card h3, .skill-card h3, .qualification-card h4 {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--notebook-rule);
+}
+
+.skill-items { margin-top: 0; border-top: 0; }
+.skill-items li, .skill-items li + li { border-top: 0; border-bottom: 1px solid var(--notebook-rule); }
+.personal-item.has-description { padding-top: 0; border-top: 0; }
+.personal-item.has-description > p + p {
+  line-height: 2rem;
+  background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(2rem - 1px), var(--notebook-rule) calc(2rem - 1px), var(--notebook-rule) 2rem);
+}
+.qualification-meta { padding-bottom: 12px; border-bottom: 1px solid var(--notebook-rule); }
+
+.work-card {
+  --curl-size: 42px;
+  --curl-hover-size: 48px;
+  position: relative;
+  isolation: isolate;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 4px;
+  overflow: visible;
+}
+
+/* 下の紙は四角のまま、上の紙だけをめくれの曲線で切り抜く */
+.work-card::before, .work-card::after {
+  content: "";
+  position: absolute;
+  border: 1px solid var(--paper-edge);
+  border-radius: 4px;
+  background: var(--surface);
+  pointer-events: none;
+}
+.work-card::before { inset: 6px -5px -6px 5px; z-index: -2; background: var(--paper-under); transition: box-shadow .35s var(--ease); }
+.work-card::after {
+  inset: 0;
+  z-index: -1;
+  mask:
+    linear-gradient(#000 0 0) left top / calc(100% - var(--curl-size)) 100% no-repeat,
+    linear-gradient(#000 0 0) right top / var(--curl-size) calc(100% - var(--curl-size)) no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M0 0H48Q24 4 4 4Q4 24 0 48Z'/%3E%3C/svg%3E") right bottom / var(--curl-size) var(--curl-size) no-repeat;
+  transition: mask-size .35s var(--ease);
+}
+
+.work-card-image { border-radius: 3px 3px 0 0; }
+.work-card .work-card-body { padding-bottom: 48px; }
+.work-card-more {
+  margin-right: 32px;
+  transform: translateX(8px) translateY(36px);
+  transition: transform .35s var(--ease);
+}
+.work-card-curl {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: var(--curl-size);
+  height: var(--curl-size);
+  pointer-events: none;
+  overflow: visible;
+  transition: width .35s var(--ease), height .35s var(--ease);
+}
+@media (hover: hover) {
+  .work-card:hover { --curl-size: var(--curl-hover-size); }
+  .work-card:hover .work-card-more { transform: translate(8px, 32px); }
+}
+.work-card:focus-visible { --curl-size: var(--curl-hover-size); }
+.work-card:focus-visible .work-card-more { transform: translate(0px, 28px); }
+@media (prefers-reduced-motion: reduce) {
+  .work-card::after, .work-card-curl, .work-card-more { transition: none; }
+}
+.work-card-curl-back {
+  fill: var(--curl-surface);
+  stroke: var(--paper-edge);
+  stroke-width: 1;
+}
+.curl-cast-shadow { flood-opacity: .2; }
+:root[data-theme="dark"] .curl-cast-shadow { flood-opacity: .5; }
+.work-card-body {
+  position: relative;
+  padding-left: 60px;
+  border-top: 1px solid var(--line);
+}
+
+.work-card-labels {
+  width: 100%;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.work-card-labels .work-category {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  letter-spacing: .06em;
+}
+
+/* 左端の接着帯と右下の小さな影で、水平な付箋を表現する */
+.work-card-tag, .tech-tag, .work-card-award, .award-item {
+  --sticky-paper: color-mix(in srgb, var(--ink) 7%, var(--surface));
+  position: relative;
+  isolation: isolate;
+  border: 0;
+  border-radius: 1px 2px 8px 1px / 1px 2px 3px 1px;
+  background: var(--sticky-paper);
+  color: var(--ink-soft);
+  box-shadow: 1px 2px 2px color-mix(in srgb, var(--ink) 9%, transparent);
+}
+
+.work-card-tag::before, .tech-tag::before,
+.work-card-award::before, .award-item::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  border-right: 1px solid color-mix(in srgb, var(--ink) 5%, transparent);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  pointer-events: none;
+}
+
+.work-card-tags, .tech-tags { gap: 9px; }
+.work-card-tag { padding: 5px 10px 5px 15px; }
+.tech-tag { display: inline-flex; align-items: center; padding: 4px 12px 4px 17px; }
+.work-card-tag--production-team { --sticky-paper: color-mix(in srgb, var(--cyan) 20%, var(--surface)); }
+.work-card-tag--production-individual { --sticky-paper: color-mix(in srgb, var(--ring-yellow) 25%, var(--surface)); }
+
+.work-card-award, .award-item { padding: 12px 14px 12px 22px; }
+.work-card-awards, .award-list { gap: 12px; }
+.work-card-award--gold, .award-item--gold { --sticky-paper: color-mix(in srgb, var(--ring-yellow) 28%, var(--surface)); }
+.work-card-award--silver, .award-item--silver { --sticky-paper: color-mix(in srgb, #aebbc4 28%, var(--surface)); }
+.work-card-award--bronze, .award-item--bronze { --sticky-paper: color-mix(in srgb, #cd8250 26%, var(--surface)); }
+.work-card-award .award-medal-icon, .award-item .award-medal-icon { display: none; }
+.award-result-group { color: var(--ink-soft); }
+
+@media (min-width: 1200px) {
+  #profile > .section-heading, .skill-section > .section-heading { padding-top: 20px; }
+  #profile .profile-layout { grid-template-columns: minmax(180px, 260px) minmax(0, 1fr); gap: 40px; padding-left: 60px; }
+}
+
+@media (max-width: 1050px) {
+  .hero h1 { font-size: clamp(48px, 5.8vw, 64px); }
+  .hero-copy { padding-left: 16px; }
+  .works-grid { gap: 28px; }
+}
+
+@media (max-width: 900px) {
+  .hero { min-height: auto; display: flex; flex-direction: column; align-items: stretch; padding-top: 190px; padding-bottom: 100px; gap: 64px; }
+  .hero::before { --hero-ring-size: 660px; left: -170px; top: 92px; transform: none; border-width: 44px; }
+  .hero::after { top: 100px; right: -90px; }
+  .hero-copy { padding-left: 36px; }
+  .hero h1 { font-size: clamp(54px, 8vw, 76px); }
+  .hero-visual { width: min(700px, 100%); margin-left: auto; transform: none; }
+  .works-heading { min-height: 150px; }
+}
+
+@media (max-width: 700px) {
+  .info-card, .qualification-card, .profile-layout { --notebook-margin: 28px; padding: 24px 20px 26px 46px; }
+  .info-card::before, .qualification-card::before, .profile-layout::before,
+  .work-card-body::before { left: -15px; width: 38px; background-size: 38px 56px; }
+  .hero { padding-top: 170px; padding-bottom: 72px; gap: 72px; }
+  .hero::before { --hero-ring-size: 510px; top: 100px; left: -134px; border-width: 30px; }
+  .hero::after { width: 130px; height: 130px; top: 105px; right: -95px; border-width: 14px; }
+  .hero-copy { padding-left: 12px; }
+  .hero h1 { font-size: clamp(46px, 12vw, 66px); }
+  .hero-catch { font-size: 22px; }
+  .hero-image-note { font-size: 13px; }
+  .section-heading h2 { font-size: 42px; }
+  .section-heading h2::before { width: 13px; height: 13px; margin-bottom: 14px; }
+  .section-heading .display-heading { font-size: 84px; }
+  .works-heading { align-items: flex-start; min-height: auto; gap: 28px; margin-bottom: 40px; }
+  .works-section::after { --section-ring-size: 650px; right: -420px; top: -160px; border-width: 36px; }
+  .work-card-body { --notebook-margin: 28px; padding: 20px 20px 24px 46px; }
+  .work-card-title { font-size: 25px; }
+  .works-grid { gap: 28px; }
+  .work-card-image-arrow { width: 40px; height: 40px; }
+}
