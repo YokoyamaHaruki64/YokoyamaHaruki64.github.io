@@ -330,34 +330,88 @@ dd { margin: 0; font-size: 17px; }
 .reveal { opacity: 1; transform: none; transition: opacity .8s var(--ease), transform .8s var(--ease); }
 .reveal.is-pending { opacity: 0; transform: translateY(22px); }
 
-.work-dialog { position: fixed; width: min(900px, calc(100% - 48px)); max-height: calc(100svh - 64px); padding: 0 36px 36px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); overscroll-behavior: contain; opacity: 0; transform: translateY(15px) scale(.97); transition: opacity .28s ease, transform .35s var(--ease); }
+.work-dialog { --dialog-gutter: 32px; position: fixed; width: min(820px, calc(100% - 48px)); max-height: calc(100dvh - 40px); padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); opacity: 0; transform: translateY(15px) scale(.97); transition: opacity .28s ease, transform .35s var(--ease); }
+.work-dialog[open] { display: flex; flex-direction: column; }
 .work-dialog.is-open { opacity: 1; transform: translateY(0) scale(1); }
 .work-dialog.is-pointer-open .dialog-close:focus { outline: none; box-shadow: none; }
 .work-dialog::backdrop { background: rgba(0,0,0,0); transition: background .28s ease; }
 .work-dialog.is-open::backdrop { background: rgba(0,0,0,.48); }
-.dialog-toolbar { position: sticky; top: 0; background: var(--surface); z-index: 1; padding: 18px 0 12px; display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.dialog-toolbar { flex: none; padding: 12px var(--dialog-gutter); display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
 .dialog-share { padding: 0; }
 .dialog-share svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .dialog-share-status { color: var(--muted); font-size: 13px; opacity: 0; transform: translateX(4px); visibility: hidden; transition: opacity 180ms ease, transform 180ms ease, visibility 180ms; }
 .dialog-share-status.is-visible { opacity: 1; transform: translateX(0); visibility: visible; }
 .dialog-close { font-size: 28px; }
-.dialog-title { font-size: 36px; line-height: 1.4; margin-top: 12px; }
+.dialog-spread { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 var(--dialog-gutter) 28px; }
+.dialog-page--overview { display: contents; }
+.dialog-page:focus-visible { outline-offset: -3px; }
+.dialog-heading { margin-bottom: 16px; }
+.dialog-title { font-size: 36px; line-height: 1.25; overflow-wrap: anywhere; }
 .dialog-summary { margin: 18px 0 24px; font-size: 17px; }
 .dialog-image { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 9px; border: 1px solid var(--line); }
+.dialog-media--video { margin-inline: calc(12px - var(--dialog-gutter)); }
 .dialog-video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; border-radius: 9px; background: #000; }
 .dialog-video-frame { width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 9px; background: #000; }
 .dialog-video-frame iframe { width: 100%; height: 100%; border: 0; }
 .dialog-video-link { margin-top: 14px; }
-.dialog-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 28px; margin-top: 24px; }
+.dialog-facts { display: grid; gap: 8px 20px; margin: 0; }
 .dialog-block { padding-top: 24px; margin-top: 24px; border-top: 1px solid var(--line); }
 .dialog-block h3 { font-size: 22px; margin-bottom: 12px; }
 .dialog-block p, .dialog-block li { font-size: 16px; line-height: 2; }
 .dialog-block ul { padding-left: 22px; margin: 0; }
-.dialog-links { display: flex; flex-wrap: wrap; gap: 22px; }
-.dialog-downloads { display: flex; flex-wrap: wrap; gap: 12px; }
-.download-link { display: inline-flex; align-items: center; gap: 12px; padding: 12px 20px; border: 1px solid var(--cyan); border-radius: 8px; font-weight: 600; transition: background .25s ease, border-color .25s ease; }
-.download-link:hover { background: var(--cyan-interactive); border-color: var(--cyan-interactive); }
-.download-link span { font-size: 24px; line-height: 1; }
+.dialog-details :is(p, ul) + :is(p, ul) { margin-top: 1em; }
+.dialog-details :is(p, li) a { text-decoration: underline; text-underline-offset: .15em; overflow-wrap: anywhere; }
+.dialog-resource-group { margin-top: 14px; }
+.dialog-resource-group h3 { font-size: 16px; line-height: 1.5; }
+.dialog-resource-links { display: grid; gap: 4px; margin: 4px 0 0; padding: 0; list-style: none; }
+.dialog-resource-link {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+  text-underline-offset: .2em;
+  overflow-wrap: anywhere;
+  transition: text-decoration-color .2s ease;
+}
+.dialog-resource-link:hover, .dialog-resource-link:focus-visible { text-decoration-color: currentColor; }
+
+@media (min-width: 980px) {
+  .work-dialog {
+    --dialog-gutter: clamp(24px, 2.5vw, 38px);
+    width: min(1280px, calc(100% - 48px));
+    height: min(920px, calc(100dvh - 56px));
+    box-shadow: 0 5px 0 var(--surface-muted), 0 6px 0 var(--line), 0 16px 45px rgb(0 0 0 / .2);
+  }
+  .dialog-toolbar { padding-block: 10px; border-bottom: 1px solid var(--line); }
+  .dialog-spread {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px;
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    background: color-mix(in srgb, #000 64%, var(--surface));
+  }
+  .dialog-page { display: block; min-width: 0; min-height: 0; padding: 24px var(--dialog-gutter) 32px; overflow-y: auto; overscroll-behavior: contain; background-color: var(--surface); }
+  .dialog-page--overview {
+    background-image: linear-gradient(to left, var(--shadow), transparent 14px);
+    scrollbar-width: thin;
+  }
+  .dialog-page--details {
+    background-image: linear-gradient(to right, var(--shadow), transparent 14px);
+    scrollbar-gutter: stable;
+  }
+  .dialog-page--details > .dialog-block:first-child,
+  .dialog-details:first-child > .dialog-block:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+  .dialog-heading { margin-bottom: 12px; }
+  .dialog-title { font-size: clamp(25px, 2.5vw, 34px); }
+  .dialog-image { width: min(100%, 49dvh); margin-inline: auto; }
+  .dialog-summary { margin: 12px 0; font-size: 16px; line-height: 1.65; }
+  .dialog-video-link { margin-top: 6px; font-size: 14px; }
+  .dialog-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; }
+  .dialog-facts > div { grid-template-columns: minmax(0, 1fr); gap: 3px; padding-block: 7px; }
+  .dialog-fact--wide { grid-column: 1 / -1; }
+  .dialog-facts > div > dt { padding: 0; font-size: 14px; }
+  .dialog-facts > div > dd { font-size: 15px; line-height: 1.55; }
+}
 
 @media (max-width: 1050px) {
   .wrap { width: calc(100% - 64px); }
@@ -365,7 +419,6 @@ dd { margin: 0; font-size: 17px; }
   .hero-role { font-size: 17px; }
   .hero h1 { font-size: 48px; }
   .hero-catch { font-size: 23px; }
-  .dialog-facts { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 700px) {
@@ -424,7 +477,7 @@ dd { margin: 0; font-size: 17px; }
   .contact-content { font-size: 17px; }
   .contact-link { min-width: min(220px, 100%); }
   .site-footer { gap: 12px; }
-  .work-dialog { width: calc(100% - 24px); max-height: calc(100svh - 28px); padding: 0 22px 28px; border-radius: 10px; }
+  .work-dialog { --dialog-gutter: 18px; width: calc(100% - 24px); max-height: calc(100dvh - 28px); border-radius: 10px; }
   .dialog-title { font-size: 30px; }
   .dialog-summary { font-size: 16px; }
 }
