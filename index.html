@@ -7,9 +7,19 @@
   <meta name="theme-color" content="#ffffff">
   <title>横山晴紀のポートフォリオ | ゲームプログラマー</title>
   <link rel="icon" href="assets/favicon.svg?v=hy" type="image/svg+xml">
+  <script>
+    document.documentElement.dataset.siteLoading = "progress";
+    // ファイルの読み込みや演出に失敗した場合も、ページ自体は表示する。
+    window.setTimeout(() => {
+      if (!document.documentElement.hasAttribute("data-site-loading")) return;
+      delete document.documentElement.dataset.siteLoading;
+      document.dispatchEvent(new Event("portfolio:ready"));
+    }, 6000);
+  </script>
   <script src="theme.js?v=theme-20261014"></script>
   <link rel="stylesheet" href="style.css?v=hero-full-bleed-20261122">
   <link rel="stylesheet" href="geometric.css?v=hero-mobile-bleed-20261122">
+  <link rel="stylesheet" href="loading.css?v=loader-wave-tuning-20261123">
   <script src="data/works.js?v=work-details-20261120" defer></script>
   <script src="data/hero-clips.js?v=hero-thumbnail-scroll-20261122" defer></script>
   <script src="data/skills.js" defer></script>
@@ -20,10 +30,16 @@
   <script src="contact.js" defer></script>
   <script src="background.js" defer></script>
   <script src="work-details.js?v=detail-line-breaks-20261122" defer></script>
-  <script src="app.js?hero-gallery-20261122" defer></script>
+  <script src="app.js?v=site-loader-20261123" defer></script>
   <script src="hero.js?v=hero-thumbnail-scroll-20261122" defer></script>
+  <script src="loading.js?v=loader-wave-reveal-20261123" defer></script>
 </head>
 <body>
+  <div class="site-loader" role="status">
+    <span class="site-loader-disc" aria-hidden="true"></span>
+    <span class="site-loader-label">Loading...</span>
+    <span class="site-loader-wave" aria-hidden="true"></span>
+  </div>
   <a class="skip-link" href="#main">本文へスキップ</a>
   <header class="site-header">
     <div class="header-inner">

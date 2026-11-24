@@ -8,8 +8,8 @@ const output = new URL("build/", root);
 const marker = "<!-- BUILD_WORK_DETAILS -->";
 const siteFiles = [
   "assets",
-  "style.css", "geometric.css",
-  "theme.js", "skills.js", "about.js", "contact.js", "background.js", "work-details.js", "app.js", "hero.js",
+  "style.css", "geometric.css", "loading.css",
+  "theme.js", "skills.js", "about.js", "contact.js", "background.js", "work-details.js", "app.js", "hero.js", "loading.js",
   "data/skills.js", "data/about.js", "data/contact.js", "data/works.js", "data/hero-clips.js"
 ];
 

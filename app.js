@@ -493,6 +493,10 @@
     delete state.portfolioWork;
     history.replaceState(state, "", window.location.href);
   }
-  showWorkFromURL();
+  if (document.documentElement.hasAttribute("data-site-loading")) {
+    document.addEventListener("portfolio:ready", showWorkFromURL, { once: true });
+  } else {
+    showWorkFromURL();
+  }
   updateScroll();
 })();
