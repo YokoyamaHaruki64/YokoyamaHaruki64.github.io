@@ -35,13 +35,15 @@
     for (const hobby of hobbies.filter((item) => item.photos?.length)) {
       const article = document.createElement("article");
       article.className = "info-card hobby-feature reveal";
+      const heading = document.createElement("header");
+      heading.className = "hobby-feature-heading";
+      heading.append(textElement("p", "hobby-feature-label", "趣味"), textElement("h3", "", hobby.title));
+
       const copy = document.createElement("div");
       copy.className = "hobby-feature-copy";
-      copy.append(textElement("p", "hobby-feature-label", "趣味"));
-      copy.append(textElement("h3", "", hobby.title));
       if (hobby.lead) copy.append(textElement("p", "hobby-feature-lead", hobby.lead));
       if (hobby.description) copy.append(textElement("p", "hobby-feature-description", hobby.description));
-      article.append(copy);
+      article.append(heading, copy);
 
       hobby.photos.forEach((photo, index) => {
         const figure = document.createElement("figure");
@@ -54,7 +56,8 @@
         image.loading = "lazy";
         figure.append(image);
         if (photo.caption) figure.append(textElement("figcaption", "", photo.caption));
-        article.append(figure);
+        if (index === 0) copy.before(figure);
+        else article.append(figure);
       });
       container.append(article);
     }

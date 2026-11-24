@@ -1,0 +1,86 @@
+/* 初期表示の進捗、着地、波紋、ページへの切り替え。 */
+@property --loading-fill {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+:root[data-site-loading] { overflow: hidden; scrollbar-gutter: stable; }
+:root[data-site-loading]:not([data-site-loading="wave"]) body > :is(.skip-link, .site-header, main, .site-footer) { visibility: hidden; }
+
+.site-loader {
+  --loader-size: clamp(58px, 10vw, 76px);
+  /* 波紋の調整。時間を短くすると、広がりとサイトのフェードインが速くなる。 */
+  --loader-wave-duration: 700ms;
+  --loader-wave-width: 60px;
+  --loader-wave-color: color-mix(in srgb, var(--cyan) 15%, transparent);
+  --loader-wave-easing: cubic-bezier(.38, .15, .52, .88);
+
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  overflow: hidden;
+  color: var(--ink);
+}
+:root[data-site-loading] .site-loader { display: block; }
+
+.site-loader::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--canvas);
+}
+
+.site-loader-disc {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: var(--loader-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(var(--cyan) var(--loading-fill, 0deg), color-mix(in srgb, var(--cyan) 17%, var(--canvas)) 0);
+  transform: translate(-50%, -50%);
+  transition: --loading-fill var(--loading-fill-duration, 180ms) var(--ease);
+}
+.site-loader-label {
+  position: absolute;
+  inset: calc(50% + var(--loader-size) / 2 + 14px) 0 auto;
+  text-align: center;
+  font: 500 16px/1.5 system-ui, sans-serif;
+  letter-spacing: .05em;
+  transition: opacity 130ms ease;
+}
+.site-loader-wave {
+  position: absolute;
+  inset: auto auto 0 50%;
+  width: var(--loader-size);
+  aspect-ratio: 1;
+  border: var(--loader-wave-width) solid var(--loader-wave-color);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%, 50%);
+}
+
+[data-site-loading="drop"] .site-loader-disc { animation: site-loader-drop 900ms both; }
+[data-site-loading="drop"] .site-loader-label { opacity: 0; }
+[data-site-loading="wave"] :is(.site-loader-disc, .site-loader-label) { visibility: hidden; }
+[data-site-loading="wave"] .site-loader-wave { animation: site-loader-wave var(--loader-wave-duration) var(--loader-wave-easing) both; }
+[data-site-loading="wave"] .site-loader::before { animation: site-loader-reveal var(--loader-wave-duration) ease-in-out both; }
+
+@keyframes site-loader-drop {
+  0% {
+    transform: translate(-50%, -50%);
+    animation-timing-function: cubic-bezier(.2, .72, .35, 1);
+  }
+  40% {
+    transform: translate(-50%, calc(-50% - 30px));
+    animation-timing-function: cubic-bezier(.5, .02, .74, .64);
+  }
+  100% { transform: translate(-50%, calc(50dvh - 100%)); }
+}
+@keyframes site-loader-wave {
+  from { width: var(--loader-size); opacity: 1; }
+  70% { opacity: .65; }
+  to { width: 230vmax; opacity: .25; }
+}
+@keyframes site-loader-reveal { to { opacity: 0; } }

@@ -7,20 +7,39 @@
   <meta name="theme-color" content="#ffffff">
   <title>横山晴紀のポートフォリオ | ゲームプログラマー</title>
   <link rel="icon" href="assets/favicon.svg?v=hy" type="image/svg+xml">
+  <script>
+    document.documentElement.dataset.siteLoading = "progress";
+    // ファイルの読み込みや演出に失敗した場合も、ページ自体は表示する。
+    window.setTimeout(() => {
+      if (!document.documentElement.hasAttribute("data-site-loading")) return;
+      delete document.documentElement.dataset.siteLoading;
+      document.dispatchEvent(new Event("portfolio:ready"));
+    }, 6000);
+  </script>
   <script src="theme.js?v=theme-20261014"></script>
-  <link rel="stylesheet" href="style.css?v=theme-20261014">
-  <link rel="stylesheet" href="geometric.css?v=paper-fold-label-sync-20261030">
-  <script src="data/works.js" defer></script>
+  <link rel="stylesheet" href="style.css?v=hero-full-bleed-20261122">
+  <link rel="stylesheet" href="geometric.css?v=hero-mobile-bleed-20261122">
+  <link rel="stylesheet" href="loading.css?v=loader-wave-tuning-20261123">
+  <script src="data/works.js?v=work-details-20261120" defer></script>
+  <script src="data/hero-clips.js?v=hero-thumbnail-scroll-20261122" defer></script>
   <script src="data/skills.js" defer></script>
   <script src="data/about.js" defer></script>
   <script src="data/contact.js" defer></script>
   <script src="skills.js" defer></script>
-  <script src="about.js" defer></script>
+  <script src="about.js?v=compact-headings-20261122" defer></script>
   <script src="contact.js" defer></script>
   <script src="background.js" defer></script>
-  <script src="app.js?v=paper-fold-label-20261030" defer></script>
+  <script src="work-details.js?v=detail-line-breaks-20261122" defer></script>
+  <script src="app.js?v=site-loader-20261123" defer></script>
+  <script src="hero.js?v=hero-thumbnail-scroll-20261122" defer></script>
+  <script src="loading.js?v=loader-wave-reveal-20261123" defer></script>
 </head>
 <body>
+  <div class="site-loader" role="status">
+    <span class="site-loader-disc" aria-hidden="true"></span>
+    <span class="site-loader-label">Loading...</span>
+    <span class="site-loader-wave" aria-hidden="true"></span>
+  </div>
   <a class="skip-link" href="#main">本文へスキップ</a>
   <header class="site-header">
     <div class="header-inner">
@@ -41,17 +60,31 @@
     <div class="reading-progress" aria-hidden="true"></div>
   </header>
   <main id="main">
-    <section class="hero wrap" id="hero" aria-labelledby="hero-title">
+    <section class="hero" id="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="hero-role">ゲームプログラマー志望</p>
         <h1 id="hero-title">横山 晴紀<!--<span class="title-dot">.</span>--></h1>
-        <p class="hero-catch">「遊び」の楽しさを<br>　技術で「創る」。</p>
+        <p class="hero-catch">「遊び」の楽しさを<br> 技術で「創る」。</p>
         <a class="primary-link" href="#works">作品を見る <span aria-hidden="true">↓</span></a>
       </div>
-      <a class="hero-visual" href="#works" aria-label="制作作品のセクションへ">
-        <img src="assets/furisuru-title.png" alt="" width="960" height="600" fetchpriority="high">
-        <p class="hero-image-note">チーム制作作品</p>
-      </a>
+      <div class="hero-gallery" role="group" aria-label="ゲーム動画ギャラリー">
+        <div class="hero-stage" id="hero-stage">
+          <img class="hero-poster" src="assets/works/furisuru-title.png" alt="ふりするフリスルのタイトル画面" width="960" height="600" fetchpriority="high">
+          <video class="hero-video" id="hero-video" muted loop playsinline preload="none" aria-hidden="true" hidden></video>
+        </div>
+        <div class="hero-gallery-controls" hidden>
+          <div class="hero-clip-info">
+            <p class="hero-clip-title" aria-live="polite"></p>
+            <button class="hero-playback" type="button" aria-controls="hero-video" hidden>再生</button>
+            <a class="hero-detail-link" href="#works" hidden>作品詳細で動画を見る</a>
+          </div>
+          <div class="hero-thumbnail-navigation">
+            <button class="hero-scroll-button" type="button" data-hero-scroll="-1" aria-label="サムネイル一覧を左へ" aria-controls="hero-thumbnails">&lt;</button>
+            <div class="hero-thumbnails" id="hero-thumbnails" role="group" aria-label="作品を選ぶ"></div>
+            <button class="hero-scroll-button" type="button" data-hero-scroll="1" aria-label="サムネイル一覧を右へ" aria-controls="hero-thumbnails">&gt;</button>
+          </div>
+        </div>
+      </div>
     </section>
     <section class="section wrap" id="profile" aria-labelledby="profile-title">
       <div class="section-heading reveal"><h2 id="profile-title">Profile</h2></div>
@@ -105,7 +138,8 @@
     <section class="section contact-section" id="contact" aria-labelledby="contact-title"><div class="wrap"><div class="section-heading reveal"><h2 id="contact-title">Contact</h2></div><div class="contact-content reveal" id="contact-content"><p>連絡先は準備中です。</p></div></div></section>
   </main>
   <footer class="site-footer wrap"><a class="back-top" href="#hero">トップへ <span aria-hidden="true">↑</span></a></footer>
-  <dialog id="work-dialog" class="work-dialog" aria-labelledby="dialog-title"><div class="dialog-toolbar"><span class="dialog-share-status" aria-live="polite"></span><button class="circle-button dialog-share" type="button" aria-label="作品リンクをコピー"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 13.5a4.5 4.5 0 0 0 6.36 0l3-3a4.5 4.5 0 0 0-6.36-6.36l-1.72 1.72"/><path d="M14 10.5a4.5 4.5 0 0 0-6.36 0l-3 3A4.5 4.5 0 0 0 11 19.86l1.72-1.72"/></svg></button><button class="circle-button dialog-close" aria-label="作品詳細を閉じる">×</button></div><div id="dialog-content"></div></dialog>
+  <dialog id="work-dialog" class="work-dialog" aria-labelledby="dialog-title"><div class="dialog-toolbar"><span class="dialog-share-status" aria-live="polite"></span><button class="circle-button dialog-share" type="button" aria-label="作品リンクをコピー"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 13.5a4.5 4.5 0 0 0 6.36 0l3-3a4.5 4.5 0 0 0-6.36-6.36l-1.72 1.72"/><path d="M14 10.5a4.5 4.5 0 0 0-6.36 0l-3 3A4.5 4.5 0 0 0 11 19.86l1.72-1.72"/></svg></button><button class="circle-button dialog-close" aria-label="作品詳細を閉じる">×</button></div><div id="dialog-content" class="dialog-spread"></div></dialog>
+  <!-- BUILD_WORK_DETAILS -->
 </body>
 </html>
 

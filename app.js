@@ -72,6 +72,7 @@
   }
 
   function safeURL(value, image = false) {
+    if (typeof value !== "string" || !value.trim()) return "";
     try {
       const url = new URL(value, location.href);
       const allowed = ["https:", "http:"];
@@ -89,6 +90,16 @@
         : "";
     } catch {
       return "";
+    }
+  }
+
+  async function loadWorkDetails(path, container) {
+    try {
+      const response = await fetch(path, { cache: "no-cache" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      container.innerHTML = window.renderWorkDetails(await response.text());
+    } catch {
+      container.querySelector("[role=status]").textContent = "作品の詳細を読み込めませんでした。";
     }
   }
 
@@ -112,25 +123,28 @@
   function workMedia(work) {
     const media = work.media;
     const imageURL = safeURL(work.image, true) || "assets/work-placeholder.svg";
-    const imageAlt = escapeHTML(work.imageAlt || work.title);
+    const imageAlt = escapeHTML(work.imageAlt || (work.image ? work.title : "作品画像は準備中です"));
     const title = escapeHTML(work.title);
 
     if (media?.type === "video") {
       const source = safeURL(media.src, true);
       if (source) {
-        return `<video class="dialog-video" src="${escapeHTML(source)}" poster="${escapeHTML(imageURL)}" controls playsinline preload="metadata" aria-label="${title} の動画"></video>`;
+        return { markup: `<video class="dialog-video" src="${escapeHTML(source)}" poster="${escapeHTML(imageURL)}" controls playsinline preload="metadata" aria-label="${title} の動画"></video>`, isVideo: true };
       }
     }
 
     if (media?.type === "youtube") {
       const videoId = youtubeVideoId(media.url);
       if (videoId) {
-        const youtubeURL = `https://www.youtube.com/watch?v=${videoId}`;
-        return `<div class="dialog-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&controls=1&playsinline=1" title="${title} の動画" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div><a class="text-link dialog-video-link" href="${youtubeURL}" target="_blank" rel="noopener noreferrer">YouTubeで見る <span aria-hidden="true">↗</span></a>`;
+        return {
+          markup: `<div class="dialog-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&controls=1&playsinline=1" title="${title} の動画" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`,
+          isVideo: true,
+          youtubeURL: `https://www.youtube.com/watch?v=${videoId}`
+        };
       }
     }
 
-    return `<img class="dialog-image" src="${escapeHTML(imageURL)}" alt="${imageAlt}" width="960" height="540">`;
+    return { markup: `<img class="dialog-image" src="${escapeHTML(imageURL)}" alt="${imageAlt}" width="960" height="540">`, isVideo: false };
   }
 
   function hasPlayableMedia(work) {
@@ -154,7 +168,7 @@
 
   function workCardMarkup(work, index) {
     const image = escapeHTML(safeURL(work.image, true) || "assets/work-placeholder.svg");
-    const imageAlt = escapeHTML(work.imageAlt || work.title);
+    const imageAlt = escapeHTML(work.imageAlt || (work.image ? work.title : "作品画像は準備中です"));
     const title = escapeHTML(work.title);
     const category = work.category ? `<span class="work-category">${escapeHTML(work.category)}</span>` : "";
     const sample = work.isSample ? '<span class="work-card-sample">仮作品</span>' : "";
@@ -207,6 +221,7 @@
   function openDialog(event, updateURL = true) {
     if (dialog.open || !works.length) return;
     const work = works[current];
+    const detailsTemplate = document.getElementById(`work-details-${work.id}`);
     dialogOpener = event?.currentTarget ?? worksGrid.querySelector(`[data-work-index="${current}"]`) ?? document.activeElement;
     dialog.classList.toggle("is-pointer-open", event?.inputMode === "pointer");
     clearTimeout(shareStatusTimer);
@@ -218,37 +233,59 @@
     const links = (work.links ?? []).filter((link) => safeURL(link.url));
     const downloads = (work.downloads ?? []).filter((item) => typeof item.url === "string" && item.url.trim() && safeURL(item.url, true));
     const awards = awardsMarkup(work.awards);
+    const media = workMedia(work);
+    const downloadLinks = downloads.map((item) => {
+      const url = safeURL(item.url, true);
+      return `<li><a class="dialog-resource-link" href="${escapeHTML(url)}" ${externalTarget(url)} download="${escapeHTML(item.filename ?? "")}">${escapeHTML(item.label || "実行ファイルをダウンロード")}</a></li>`;
+    }).join("");
+    const relatedLinks = links.map((link) => `<li><a class="dialog-resource-link" href="${escapeHTML(safeURL(link.url))}" target="_blank" rel="noopener noreferrer">${escapeHTML(link.label || link.url)}</a></li>`).join("");
     dialogContent.innerHTML = `
-      ${sampleLabel(work)}
-      <h2 id="dialog-title" class="dialog-title">${escapeHTML(work.title)}</h2>
-      ${categoryTag(work)}
-      <p class="dialog-summary">${escapeHTML(work.summary)}</p>
-      ${workMedia(work)}
-      <dl class="work-meta dialog-facts">
-        <div><dt>担当</dt><dd>${escapeHTML(work.role)}</dd></div>
-        <div><dt>使用技術</dt><dd class="tech-tags">${tags(work)}</dd></div>
-        <div><dt>制作期間</dt><dd><dl class="dialog-period">${periodRowsMarkup(work.period, "未設定")}</dl></dd></div>
-        <div><dt>開発体制</dt><dd>${escapeHTML(work.team || "未設定")}</dd></div>
-        <div><dt>対象環境</dt><dd>${escapeHTML(work.platform || "未設定")}</dd></div>
-        ${awards ? `<div><dt>受賞歴</dt><dd>${awards}</dd></div>` : ""}
-      </dl>
-      <section class="dialog-block">
-        <h3>作品のポイント</h3>
-        <ul>${(work.points ?? []).map((point) => `<li>${escapeHTML(point)}</li>`).join("")}</ul>
+      <section class="dialog-page dialog-page--overview" aria-label="作品情報" tabindex="0">
+        <header class="dialog-heading">
+          ${sampleLabel(work)}
+          <h2 id="dialog-title" class="dialog-title">${escapeHTML(work.title)}</h2>
+          ${categoryTag(work)}
+        </header>
+        <div class="dialog-media${media.isVideo ? " dialog-media--video" : ""}">${media.markup}</div>
+        ${media.youtubeURL ? `<p class="dialog-video-link"><a class="dialog-resource-link" href="${media.youtubeURL}" target="_blank" rel="noopener noreferrer">YouTubeで見る</a></p>` : ""}
+        <p class="dialog-summary">${escapeHTML(work.summary)}</p>
+        <dl class="work-meta dialog-facts">
+          <div class="dialog-fact--wide"><dt>担当</dt><dd>${escapeHTML(work.role)}</dd></div>
+          <div><dt>使用技術</dt><dd class="tech-tags">${tags(work)}</dd></div>
+          <div><dt>制作期間</dt><dd><dl class="dialog-period">${periodRowsMarkup(work.period, "未設定")}</dl></dd></div>
+          <div><dt>開発体制</dt><dd>${escapeHTML(work.team || "未設定")}</dd></div>
+          <div><dt>対象環境</dt><dd>${escapeHTML(work.platform || "未設定")}</dd></div>
+          ${awards ? `<div class="dialog-fact--wide"><dt>受賞歴</dt><dd>${awards}</dd></div>` : ""}
+        </dl>
+        ${downloadLinks ? `<section class="dialog-resource-group">
+          <h3>作品をプレイ <span aria-hidden="true">→</span></h3>
+          <ul class="dialog-resource-links">${downloadLinks}</ul>
+        </section>` : ""}
+        ${relatedLinks ? `<section class="dialog-resource-group">
+          <h3>リンク一覧</h3>
+          <ul class="dialog-resource-links">${relatedLinks}</ul>
+        </section>` : ""}
       </section>
-      ${(work.details ?? []).map((block) => `<section class="dialog-block"><h3>${escapeHTML(block.heading)}</h3><p>${escapeHTML(block.text)}</p></section>`).join("")}
-      ${downloads.length ? `<section class="dialog-block"><h3>ダウンロード</h3><div class="dialog-downloads">${downloads.map((item) => { const url = safeURL(item.url, true); return `<a class="download-link" href="${escapeHTML(url)}" ${externalTarget(url)} download="${escapeHTML(item.filename ?? "")}"><span aria-hidden="true">↓</span>${escapeHTML(item.label || "実行ファイルをダウンロード")}</a>`; }).join("")}</div></section>` : ""}
-      ${links.length ? `<div class="dialog-block dialog-links">${links.map((link) => `<a class="text-link" href="${escapeHTML(safeURL(link.url))}" target="_blank" rel="noopener noreferrer">${escapeHTML(link.label)} <span aria-hidden="true">↗</span></a>`).join("")}</div>` : ""}
+      <section class="dialog-page dialog-page--details" aria-label="作品の詳細" tabindex="0">
+        ${detailsTemplate || work.detailsPath ? '<div class="dialog-details"></div>' : ""}
+      </section>
     `;
+    const detailsContainer = dialogContent.querySelector(".dialog-details");
+    if (detailsTemplate) {
+      detailsContainer.append(detailsTemplate.content.cloneNode(true));
+    } else if (detailsContainer) {
+      detailsContainer.innerHTML = '<div class="dialog-block"><p role="status">作品の詳細を読み込み中です…</p></div>';
+    }
     setupImages(dialogContent);
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.paddingRight = `${scrollbarWidth}px`;
     document.body.classList.add("modal-open");
     dialog.showModal();
-    dialog.scrollTop = 0;
+    dialogContent.scrollTop = 0;
     void dialog.offsetWidth;
     dialog.classList.add("is-open");
     dialog.querySelector(".dialog-close").focus({ preventScroll: true });
+    if (!detailsTemplate && detailsContainer) loadWorkDetails(work.detailsPath, detailsContainer);
   }
 
   function showWorkFromURL() {
@@ -375,13 +412,6 @@
     current = Number(card.dataset.workIndex);
     openDialog({ currentTarget: card, inputMode: event.detail > 0 ? "pointer" : "keyboard" });
   });
-  if (works.length) {
-    const heroImage = document.querySelector(".hero-visual img");
-    heroImage.src = safeURL(works[0].image, true) || "assets/work-placeholder.svg";
-    heroImage.alt = works[0].imageAlt || works[0].title;
-    document.querySelector(".hero-image-note").textContent = works[0].isSample ? "仮作品のイメージ" : works[0].title;
-  }
-  setupImages(document.querySelector(".hero-visual"));
   const sampleCount = works.filter((work) => work.isSample).length;
   const collectionLabel = document.querySelector("#collection-label");
   collectionLabel.hidden = sampleCount === 0;
@@ -463,6 +493,10 @@
     delete state.portfolioWork;
     history.replaceState(state, "", window.location.href);
   }
-  showWorkFromURL();
+  if (document.documentElement.hasAttribute("data-site-loading")) {
+    document.addEventListener("portfolio:ready", showWorkFromURL, { once: true });
+  } else {
+    showWorkFromURL();
+  }
   updateScroll();
 })();

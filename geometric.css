@@ -15,12 +15,10 @@
 }
 
 .hero {
+  --hero-gutter: max(48px, calc((100% - var(--wrap)) / 2));
+  --hero-media-start: 40%;
+  --hero-fade-width: 24%;
   --hero-ring-size: clamp(620px, 62vw, 900px);
-  min-height: min(940px, calc(100svh + 40px));
-  grid-template-columns: .95fr 1.05fr;
-  gap: 0;
-  padding-top: calc(var(--header-height) + 100px);
-  padding-bottom: 140px;
 }
 
 .hero::before, .hero::after {
@@ -34,7 +32,7 @@
 .hero::before {
   width: var(--hero-ring-size);
   height: var(--hero-ring-size);
-  left: calc(var(--hero-ring-size) * -.24);
+  left: calc(var(--hero-gutter) - var(--hero-ring-size) * .24);
   top: 50%;
   transform: translateY(-46%);
   border: clamp(36px, 4.5vw, 64px) solid var(--composition-cyan);
@@ -43,34 +41,29 @@
 .hero::after {
   width: clamp(130px, 16vw, 230px);
   height: clamp(130px, 16vw, 230px);
-  right: -3%;
+  right: calc(var(--hero-gutter) - 3%);
   top: 110px;
   border: clamp(14px, 1.8vw, 24px) solid var(--composition-green);
 }
 
-.hero-copy { padding-left: clamp(24px, 3vw, 48px); }
+.hero-copy { margin-inline-start: var(--hero-gutter); padding: 32px 0 48px clamp(24px, 3vw, 48px); }
 .hero h1 { font-size: clamp(54px, 6vw, 88px); letter-spacing: -.035em; white-space: nowrap; }
 .hero-role { font-weight: 500; }
 .hero-catch { font-size: clamp(22px, 2vw, 28px); }
 .primary-link { border-radius: 4px; padding-inline: 24px; }
-.hero-visual { width: calc(100% + 40px); margin-left: -40px; transform: translateY(64px); }
-.hero-visual img { border: 0; border-radius: 6px; box-shadow: 0 20px 60px var(--shadow); }
-.hero-image-note { text-align: right; }
+.hero-gallery {
+  position: absolute;
+  inset-block: var(--header-height) 0;
+  inset-inline: var(--hero-media-start) 0;
+}
+.hero-stage { height: 100%; mask-image: linear-gradient(to right, transparent, #000 var(--hero-fade-width)); }
 
 .section-heading h2 {
   font-size: clamp(40px, 4.5vw, 64px);
-  font-family: Arial, sans-serif;
-  font-weight: 700;
+  font-family: "Michroma", var(--font-heading);
+  font-weight: 400;
+  font-synthesis: none;
   letter-spacing: -.045em;
-}
-
-.section-heading h2::before {
-  width: 16px;
-  height: 16px;
-  border: 3px solid var(--cyan);
-  border-radius: 50%;
-  background: transparent;
-  margin-bottom: 20px;
 }
 
 .profile-layout, .info-card, .qualification-card { border-radius: 6px; }
@@ -78,7 +71,7 @@
 .profile-photo { border-radius: 4px; }
 #profile::before { top: auto; bottom: -80px; --section-ring-size: clamp(260px, 30vw, 440px); }
 
-.works-section { padding-block: clamp(90px, 9vw, 140px); }
+.works-section { padding-block-end: clamp(90px, 9vw, 140px); }
 .works-section::before { background: color-mix(in srgb, var(--cyan) 4%, var(--canvas)); }
 .works-section::after {
   --section-ring-size: clamp(650px, 82vw, 1200px);
@@ -88,8 +81,8 @@
   top: calc(var(--section-ring-size) * -.28);
 }
 
-.works-heading { min-height: 180px; align-items: center; margin-bottom: 64px; }
-.section-heading .display-heading { font-size: clamp(80px, 10vw, 140px); line-height: 1; letter-spacing: -.065em; }
+.works-heading { align-items: center; margin-bottom: 64px; }
+.section-heading .display-heading { font-size: clamp(64px, 8vw, 80px); line-height: 1; letter-spacing: -.065em; }
 .works-sort-controls { background: var(--surface); }
 .works-grid { gap: 48px; }
 .work-card { border: 0; border-radius: 6px; }
@@ -278,41 +271,51 @@
 .award-result-group { color: var(--ink-soft); }
 
 @media (min-width: 1200px) {
-  #profile > .section-heading, .skill-section > .section-heading { padding-top: 20px; }
   #profile .profile-layout { grid-template-columns: minmax(180px, 260px) minmax(0, 1fr); gap: 40px; padding-left: 60px; }
 }
 
 @media (max-width: 1050px) {
+  .hero { --hero-gutter: 32px; }
   .hero h1 { font-size: clamp(48px, 5.8vw, 64px); }
   .hero-copy { padding-left: 16px; }
   .works-grid { gap: 28px; }
 }
 
 @media (max-width: 900px) {
-  .hero { min-height: auto; display: flex; flex-direction: column; align-items: stretch; padding-top: 190px; padding-bottom: 100px; gap: 64px; }
+  .hero { --hero-media-start: 34%; --hero-fade-width: 70%; padding-bottom: clamp(112px, 18svh, 148px); }
   .hero::before { --hero-ring-size: 660px; left: -170px; top: 92px; transform: none; border-width: 44px; }
   .hero::after { top: 100px; right: -90px; }
-  .hero-copy { padding-left: 36px; }
+  .hero-copy { padding: 24px 12px 24px 36px; }
+  .hero-copy > :is(p, h1) { text-shadow: 0 0 12px var(--canvas); }
   .hero h1 { font-size: clamp(54px, 8vw, 76px); }
-  .hero-visual { width: min(700px, 100%); margin-left: auto; transform: none; }
-  .works-heading { min-height: 150px; }
+  .hero-gallery { inset-inline: 0; }
+  .hero-stage { position: absolute; inset: 0 0 0 var(--hero-media-start); }
+  .hero-stage::after { content: none; }
+  .hero-poster, .hero-video { object-position: center; }
+  .hero-gallery-controls {
+    inset: auto 0 0;
+    padding: 24px 4% max(14px, env(safe-area-inset-bottom));
+    color: var(--ink);
+    text-shadow: none;
+    background: linear-gradient(to top, var(--canvas), color-mix(in srgb, var(--canvas) 90%, transparent) 80%, transparent);
+  }
+  .hero-gallery-controls :focus-visible { outline-color: var(--ink); }
+  .hero-playback { border-color: var(--line); background: var(--surface); }
 }
 
 @media (max-width: 700px) {
   .info-card, .qualification-card, .profile-layout { --notebook-margin: 28px; padding: 24px 20px 26px 46px; }
   .info-card::before, .qualification-card::before, .profile-layout::before,
   .work-card-body::before { left: -15px; width: 38px; background-size: 38px 56px; }
-  .hero { padding-top: 170px; padding-bottom: 72px; gap: 72px; }
+  .hero { --hero-gutter: 20px; }
   .hero::before { --hero-ring-size: 510px; top: 100px; left: -134px; border-width: 30px; }
   .hero::after { width: 130px; height: 130px; top: 105px; right: -95px; border-width: 14px; }
   .hero-copy { padding-left: 12px; }
   .hero h1 { font-size: clamp(46px, 12vw, 66px); }
   .hero-catch { font-size: 22px; }
-  .hero-image-note { font-size: 13px; }
   .section-heading h2 { font-size: 42px; }
-  .section-heading h2::before { width: 13px; height: 13px; margin-bottom: 14px; }
-  .section-heading .display-heading { font-size: 84px; }
-  .works-heading { align-items: flex-start; min-height: auto; gap: 28px; margin-bottom: 40px; }
+  .section-heading .display-heading { font-size: 60px; }
+  .works-heading { align-items: flex-start; gap: 28px; margin-bottom: 40px; }
   .works-section::after { --section-ring-size: 650px; right: -420px; top: -160px; border-width: 36px; }
   .work-card-body { --notebook-margin: 28px; padding: 20px 20px 24px 46px; }
   .work-card-title { font-size: 25px; }
