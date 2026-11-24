@@ -1,5 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=Michroma&family=Space+Grotesk:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@500;600;700&display=swap");
+
+@font-face {
+  font-family: "Moralerspace Neon";
+  src: url("assets/fonts/MoralerspaceNeon-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Moralerspace Neon";
+  src: url("assets/fonts/MoralerspaceNeon-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 :root {
   color-scheme: light;
+  --font-heading: "Space Grotesk", "Zen Kaku Gothic New", sans-serif;
+  --font-body: "Moralerspace Neon", sans-serif;
   --canvas: #fff;
   --surface: #fff;
   --surface-muted: #f7f7f7;
@@ -59,7 +79,7 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-height) + 24px); }
-body { margin: 0; background: var(--canvas); color: var(--ink); font-family: Arial, "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; font-size: 17px; line-height: 1.9; -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.9; -webkit-font-smoothing: antialiased; }
 body.modal-open { overflow: hidden; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; }
@@ -67,6 +87,9 @@ a { color: inherit; text-decoration: none; }
 button, img { -webkit-user-drag: none; }
 img { display: block; max-width: 100%; height: auto; }
 h1, h2, h3, h4, h5, p { margin: 0; }
+h1, h2, h3, h4 { font-family: var(--font-body); }
+.hero h1, .profile-copy h3, .work-card-title, .dialog-title { font-family: var(--font-heading); }
+.skill-card h3, .dialog-details h3 { font-weight: 700; }
 [hidden] { display: none !important; }
 button:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; }
 ::selection { background: var(--cyan-interactive); color: var(--ink); }
@@ -119,14 +142,14 @@ main { position: relative; isolation: isolate; overflow: clip; }
 .click-rings { position: absolute; inset: 0; overflow: clip; pointer-events: none; z-index: -1; }
 .click-ring { position: absolute; width: calc(var(--ripple-size, 160px) * var(--ripple-scale, 1)); height: calc(var(--ripple-size, 160px) * var(--ripple-scale, 1)); border: calc(var(--ripple-width, 4px) * var(--ripple-scale, 1)) solid var(--ring-color, var(--cyan)); border-radius: 50%; opacity: 0; pointer-events: none; }
 
-.section { padding-block: clamp(80px, 8vw, 120px); position: relative; }
+.section { padding-block: clamp(44px, 5vw, 72px) clamp(80px, 8vw, 120px); position: relative; }
 .section-heading { margin-bottom: 44px; }
 .section-heading h2 { font-size: clamp(30px, 3.3vw, 42px); line-height: 1.5; letter-spacing: .015em; }
-.section-heading h2::before { content: ""; display: block; width: 36px; height: 5px; border-radius: 3px; background: var(--cyan); margin-bottom: 22px; }
 .section-note, .sample-note { font-size: 16px; color: var(--muted); line-height: 1.8; }
 .section-note { margin-top: 24px; }
 
 #profile { border-top: 1px solid var(--line); }
+.profile-layout, .skill-grid { max-width: 840px; margin-inline: auto; }
 .profile-layout { position: relative; z-index: 0; display: grid; grid-template-columns: minmax(230px, 320px) minmax(0, 1fr); align-items: center; gap: clamp(36px, 6vw, 80px); padding: clamp(24px, 5vw, 56px); border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
 .profile-photo { width: 100%; aspect-ratio: 4 / 5; display: grid; place-items: center; overflow: hidden; border-radius: 8px; }
 .profile-photo img { width: 100%; height: 100%; object-fit: cover; }
@@ -254,12 +277,9 @@ dd { margin: 0; font-size: 17px; }
 .about-section::before { --section-ring-size: clamp(320px, 42vw, 620px); --section-ring-color: var(--ring-yellow); left: calc((100% - 100vw) / 2 - var(--section-ring-size) * .6); top: -100px; }
 
 @media (min-width: 1200px) {
-  #profile, .skill-section { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 40px; align-items: start; }
-  #profile > .section-heading, .skill-section > .section-heading { margin: 0; padding-top: 30px; }
   #profile .profile-layout { grid-template-columns: minmax(180px, 240px) minmax(0, 1fr); padding: 36px; gap: 32px; }
   #profile .profile-facts > div { grid-template-columns: 88px minmax(0, 1fr); gap: 16px; }
   .skill-section .skill-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  #profile > noscript, .skill-section > noscript { grid-column: 2; }
 }
 .about-block + .about-block { margin-top: 72px; }
 .about-block-heading { margin-bottom: 30px; }
@@ -268,23 +288,20 @@ dd { margin: 0; font-size: 17px; }
 .personal-card h3 { font-size: 24px; line-height: 1.6; }
 .hobby-features { grid-column: 1 / -1; display: grid; gap: 24px; }
 .hobby-feature { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px 36px; }
-.hobby-feature-copy { grid-column: 1; grid-row: 2; align-self: center; }
+.hobby-feature-heading, .hobby-photo-main { grid-column: 1 / -1; }
+.hobby-feature-copy { grid-column: 1; align-self: center; }
 .hobby-feature-label { margin: 0 0 8px; color: var(--muted); font-size: 15px; }
 .hobby-feature h3 { font-size: 30px; line-height: 1.4; }
-.hobby-feature-lead { margin: 20px 0 16px; font-size: 22px; font-weight: 700; line-height: 1.7; }
+.hobby-feature-lead { margin-bottom: 16px; font-size: 22px; font-weight: 700; line-height: 1.7; }
 .hobby-feature-description { color: var(--ink-soft); font-size: 16px; line-height: 1.95; white-space: pre-line; }
 .hobby-photo { min-width: 0; margin: 0; }
-.hobby-photo-main { grid-column: 1 / -1; grid-row: 1; }
-.hobby-photo-detail { grid-column: 2; grid-row: 2; align-self: center; }
+.hobby-photo-detail { grid-column: 2; align-self: center; }
 .hobby-photo img { width: 100%; height: auto; border-radius: 8px; }
 .hobby-photo-detail img { object-fit: contain; }
 .hobby-photo figcaption { margin-top: 10px; color: var(--muted); font-size: 14px; line-height: 1.7; }
 @media (max-width: 800px) {
   .hobby-feature { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .hobby-feature-copy, .hobby-photo-main, .hobby-photo-detail { grid-column: 1; }
-  .hobby-photo-main { grid-row: 1; }
-  .hobby-feature-copy { grid-row: 2; }
-  .hobby-photo-detail { grid-row: 3; }
+  .hobby-photo-detail { grid-column: 1; }
   .hobby-photo-detail img { max-height: none; }
 }
 .personal-list { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0 0; padding: 0; list-style: none; }
@@ -379,10 +396,9 @@ dd { margin: 0; font-size: 17px; }
   .hero h1 { font-size: clamp(40px, 10vw, 56px); margin: 16px 0 22px; }
   .hero-catch { font-size: 23px; }
   .primary-link { font-size: 17px; margin-top: 28px; }
-  .section { padding-block: 72px; }
+  .section { padding-block: 40px 72px; }
   .section-heading { margin-bottom: 32px; }
   .section-heading h2 { font-size: 30px; }
-  .section-heading h2::before { margin-bottom: 18px; }
   .profile-layout { grid-template-columns: 1fr; gap: 32px; padding: 24px; }
   .profile-photo { width: min(100%, 260px); justify-self: center; }
   .profile-copy h3 { font-size: 32px; }

@@ -59,18 +59,10 @@
 
 .section-heading h2 {
   font-size: clamp(40px, 4.5vw, 64px);
-  font-family: Arial, sans-serif;
-  font-weight: 700;
+  font-family: "Michroma", var(--font-heading);
+  font-weight: 400;
+  font-synthesis: none;
   letter-spacing: -.045em;
-}
-
-.section-heading h2::before {
-  width: 16px;
-  height: 16px;
-  border: 3px solid var(--cyan);
-  border-radius: 50%;
-  background: transparent;
-  margin-bottom: 20px;
 }
 
 .profile-layout, .info-card, .qualification-card { border-radius: 6px; }
@@ -78,7 +70,7 @@
 .profile-photo { border-radius: 4px; }
 #profile::before { top: auto; bottom: -80px; --section-ring-size: clamp(260px, 30vw, 440px); }
 
-.works-section { padding-block: clamp(90px, 9vw, 140px); }
+.works-section { padding-block-end: clamp(90px, 9vw, 140px); }
 .works-section::before { background: color-mix(in srgb, var(--cyan) 4%, var(--canvas)); }
 .works-section::after {
   --section-ring-size: clamp(650px, 82vw, 1200px);
@@ -88,8 +80,8 @@
   top: calc(var(--section-ring-size) * -.28);
 }
 
-.works-heading { min-height: 180px; align-items: center; margin-bottom: 64px; }
-.section-heading .display-heading { font-size: clamp(80px, 10vw, 140px); line-height: 1; letter-spacing: -.065em; }
+.works-heading { align-items: center; margin-bottom: 64px; }
+.section-heading .display-heading { font-size: clamp(64px, 8vw, 80px); line-height: 1; letter-spacing: -.065em; }
 .works-sort-controls { background: var(--surface); }
 .works-grid { gap: 48px; }
 .work-card { border: 0; border-radius: 6px; }
@@ -278,7 +270,6 @@
 .award-result-group { color: var(--ink-soft); }
 
 @media (min-width: 1200px) {
-  #profile > .section-heading, .skill-section > .section-heading { padding-top: 20px; }
   #profile .profile-layout { grid-template-columns: minmax(180px, 260px) minmax(0, 1fr); gap: 40px; padding-left: 60px; }
 }
 
@@ -310,9 +301,8 @@
   .hero-catch { font-size: 22px; }
   .hero-image-note { font-size: 13px; }
   .section-heading h2 { font-size: 42px; }
-  .section-heading h2::before { width: 13px; height: 13px; margin-bottom: 14px; }
-  .section-heading .display-heading { font-size: 84px; }
-  .works-heading { align-items: flex-start; min-height: auto; gap: 28px; margin-bottom: 40px; }
+  .section-heading .display-heading { font-size: 60px; }
+  .works-heading { align-items: flex-start; gap: 28px; margin-bottom: 40px; }
   .works-section::after { --section-ring-size: 650px; right: -420px; top: -160px; border-width: 36px; }
   .work-card-body { --notebook-margin: 28px; padding: 20px 20px 24px 46px; }
   .work-card-title { font-size: 25px; }
