@@ -8,9 +8,10 @@
   <title>横山晴紀のポートフォリオ | ゲームプログラマー</title>
   <link rel="icon" href="assets/favicon.svg?v=hy" type="image/svg+xml">
   <script src="theme.js?v=theme-20261014"></script>
-  <link rel="stylesheet" href="style.css?work-details-20261122">
-  <link rel="stylesheet" href="geometric.css?neon-20261122">
-  <script src="data/works.js?work-details-20261120" defer></script>
+  <link rel="stylesheet" href="style.css?v=hero-full-bleed-20261122">
+  <link rel="stylesheet" href="geometric.css?v=hero-mobile-bleed-20261122">
+  <script src="data/works.js?v=work-details-20261120" defer></script>
+  <script src="data/hero-clips.js?v=hero-thumbnail-scroll-20261122" defer></script>
   <script src="data/skills.js" defer></script>
   <script src="data/about.js" defer></script>
   <script src="data/contact.js" defer></script>
@@ -19,7 +20,8 @@
   <script src="contact.js" defer></script>
   <script src="background.js" defer></script>
   <script src="work-details.js?v=detail-line-breaks-20261122" defer></script>
-  <script src="app.js?work-details-20261122" defer></script>
+  <script src="app.js?hero-gallery-20261122" defer></script>
+  <script src="hero.js?v=hero-thumbnail-scroll-20261122" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">本文へスキップ</a>
@@ -42,17 +44,31 @@
     <div class="reading-progress" aria-hidden="true"></div>
   </header>
   <main id="main">
-    <section class="hero wrap" id="hero" aria-labelledby="hero-title">
+    <section class="hero" id="hero" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="hero-role">ゲームプログラマー志望</p>
         <h1 id="hero-title">横山 晴紀<!--<span class="title-dot">.</span>--></h1>
         <p class="hero-catch">「遊び」の楽しさを<br> 技術で「創る」。</p>
         <a class="primary-link" href="#works">作品を見る <span aria-hidden="true">↓</span></a>
       </div>
-      <a class="hero-visual" href="#works" aria-label="制作作品のセクションへ">
-        <img src="assets/furisuru-title.png" alt="" width="960" height="600" fetchpriority="high">
-        <p class="hero-image-note">チーム制作作品</p>
-      </a>
+      <div class="hero-gallery" role="group" aria-label="ゲーム動画ギャラリー">
+        <div class="hero-stage" id="hero-stage">
+          <img class="hero-poster" src="assets/works/furisuru-title.png" alt="ふりするフリスルのタイトル画面" width="960" height="600" fetchpriority="high">
+          <video class="hero-video" id="hero-video" muted loop playsinline preload="none" aria-hidden="true" hidden></video>
+        </div>
+        <div class="hero-gallery-controls" hidden>
+          <div class="hero-clip-info">
+            <p class="hero-clip-title" aria-live="polite"></p>
+            <button class="hero-playback" type="button" aria-controls="hero-video" hidden>再生</button>
+            <a class="hero-detail-link" href="#works" hidden>作品詳細で動画を見る</a>
+          </div>
+          <div class="hero-thumbnail-navigation">
+            <button class="hero-scroll-button" type="button" data-hero-scroll="-1" aria-label="サムネイル一覧を左へ" aria-controls="hero-thumbnails">&lt;</button>
+            <div class="hero-thumbnails" id="hero-thumbnails" role="group" aria-label="作品を選ぶ"></div>
+            <button class="hero-scroll-button" type="button" data-hero-scroll="1" aria-label="サムネイル一覧を右へ" aria-controls="hero-thumbnails">&gt;</button>
+          </div>
+        </div>
+      </div>
     </section>
     <section class="section wrap" id="profile" aria-labelledby="profile-title">
       <div class="section-heading reveal"><h2 id="profile-title">Profile</h2></div>

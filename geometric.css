@@ -15,12 +15,10 @@
 }
 
 .hero {
+  --hero-gutter: max(48px, calc((100% - var(--wrap)) / 2));
+  --hero-media-start: 40%;
+  --hero-fade-width: 24%;
   --hero-ring-size: clamp(620px, 62vw, 900px);
-  min-height: min(940px, calc(100svh + 40px));
-  grid-template-columns: .95fr 1.05fr;
-  gap: 0;
-  padding-top: calc(var(--header-height) + 100px);
-  padding-bottom: 140px;
 }
 
 .hero::before, .hero::after {
@@ -34,7 +32,7 @@
 .hero::before {
   width: var(--hero-ring-size);
   height: var(--hero-ring-size);
-  left: calc(var(--hero-ring-size) * -.24);
+  left: calc(var(--hero-gutter) - var(--hero-ring-size) * .24);
   top: 50%;
   transform: translateY(-46%);
   border: clamp(36px, 4.5vw, 64px) solid var(--composition-cyan);
@@ -43,19 +41,22 @@
 .hero::after {
   width: clamp(130px, 16vw, 230px);
   height: clamp(130px, 16vw, 230px);
-  right: -3%;
+  right: calc(var(--hero-gutter) - 3%);
   top: 110px;
   border: clamp(14px, 1.8vw, 24px) solid var(--composition-green);
 }
 
-.hero-copy { padding-left: clamp(24px, 3vw, 48px); }
+.hero-copy { margin-inline-start: var(--hero-gutter); padding: 32px 0 48px clamp(24px, 3vw, 48px); }
 .hero h1 { font-size: clamp(54px, 6vw, 88px); letter-spacing: -.035em; white-space: nowrap; }
 .hero-role { font-weight: 500; }
 .hero-catch { font-size: clamp(22px, 2vw, 28px); }
 .primary-link { border-radius: 4px; padding-inline: 24px; }
-.hero-visual { width: calc(100% + 40px); margin-left: -40px; transform: translateY(64px); }
-.hero-visual img { border: 0; border-radius: 6px; box-shadow: 0 20px 60px var(--shadow); }
-.hero-image-note { text-align: right; }
+.hero-gallery {
+  position: absolute;
+  inset-block: var(--header-height) 0;
+  inset-inline: var(--hero-media-start) 0;
+}
+.hero-stage { height: 100%; mask-image: linear-gradient(to right, transparent, #000 var(--hero-fade-width)); }
 
 .section-heading h2 {
   font-size: clamp(40px, 4.5vw, 64px);
@@ -274,32 +275,44 @@
 }
 
 @media (max-width: 1050px) {
+  .hero { --hero-gutter: 32px; }
   .hero h1 { font-size: clamp(48px, 5.8vw, 64px); }
   .hero-copy { padding-left: 16px; }
   .works-grid { gap: 28px; }
 }
 
 @media (max-width: 900px) {
-  .hero { min-height: auto; display: flex; flex-direction: column; align-items: stretch; padding-top: 190px; padding-bottom: 100px; gap: 64px; }
+  .hero { --hero-media-start: 34%; --hero-fade-width: 70%; padding-bottom: clamp(112px, 18svh, 148px); }
   .hero::before { --hero-ring-size: 660px; left: -170px; top: 92px; transform: none; border-width: 44px; }
   .hero::after { top: 100px; right: -90px; }
-  .hero-copy { padding-left: 36px; }
+  .hero-copy { padding: 24px 12px 24px 36px; }
+  .hero-copy > :is(p, h1) { text-shadow: 0 0 12px var(--canvas); }
   .hero h1 { font-size: clamp(54px, 8vw, 76px); }
-  .hero-visual { width: min(700px, 100%); margin-left: auto; transform: none; }
-  .works-heading { min-height: 150px; }
+  .hero-gallery { inset-inline: 0; }
+  .hero-stage { position: absolute; inset: 0 0 0 var(--hero-media-start); }
+  .hero-stage::after { content: none; }
+  .hero-poster, .hero-video { object-position: center; }
+  .hero-gallery-controls {
+    inset: auto 0 0;
+    padding: 24px 4% max(14px, env(safe-area-inset-bottom));
+    color: var(--ink);
+    text-shadow: none;
+    background: linear-gradient(to top, var(--canvas), color-mix(in srgb, var(--canvas) 90%, transparent) 80%, transparent);
+  }
+  .hero-gallery-controls :focus-visible { outline-color: var(--ink); }
+  .hero-playback { border-color: var(--line); background: var(--surface); }
 }
 
 @media (max-width: 700px) {
   .info-card, .qualification-card, .profile-layout { --notebook-margin: 28px; padding: 24px 20px 26px 46px; }
   .info-card::before, .qualification-card::before, .profile-layout::before,
   .work-card-body::before { left: -15px; width: 38px; background-size: 38px 56px; }
-  .hero { padding-top: 170px; padding-bottom: 72px; gap: 72px; }
+  .hero { --hero-gutter: 20px; }
   .hero::before { --hero-ring-size: 510px; top: 100px; left: -134px; border-width: 30px; }
   .hero::after { width: 130px; height: 130px; top: 105px; right: -95px; border-width: 14px; }
   .hero-copy { padding-left: 12px; }
   .hero h1 { font-size: clamp(46px, 12vw, 66px); }
   .hero-catch { font-size: 22px; }
-  .hero-image-note { font-size: 13px; }
   .section-heading h2 { font-size: 42px; }
   .section-heading .display-heading { font-size: 60px; }
   .works-heading { align-items: flex-start; gap: 28px; margin-bottom: 40px; }

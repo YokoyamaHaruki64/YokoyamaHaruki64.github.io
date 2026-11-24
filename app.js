@@ -412,13 +412,6 @@
     current = Number(card.dataset.workIndex);
     openDialog({ currentTarget: card, inputMode: event.detail > 0 ? "pointer" : "keyboard" });
   });
-  if (works.length) {
-    const heroImage = document.querySelector(".hero-visual img");
-    heroImage.src = safeURL(works[0].image, true) || "assets/work-placeholder.svg";
-    heroImage.alt = works[0].imageAlt || works[0].title;
-    document.querySelector(".hero-image-note").textContent = works[0].isSample ? "仮作品のイメージ" : works[0].title;
-  }
-  setupImages(document.querySelector(".hero-visual"));
   const sampleCount = works.filter((work) => work.isSample).length;
   const collectionLabel = document.querySelector("#collection-label");
   collectionLabel.hidden = sampleCount === 0;

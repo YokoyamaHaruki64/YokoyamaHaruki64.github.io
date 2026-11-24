@@ -9,8 +9,8 @@ const marker = "<!-- BUILD_WORK_DETAILS -->";
 const siteFiles = [
   "assets",
   "style.css", "geometric.css",
-  "theme.js", "skills.js", "about.js", "contact.js", "background.js", "work-details.js", "app.js",
-  "data/skills.js", "data/about.js", "data/contact.js", "data/works.js"
+  "theme.js", "skills.js", "about.js", "contact.js", "background.js", "work-details.js", "app.js", "hero.js",
+  "data/skills.js", "data/about.js", "data/contact.js", "data/works.js", "data/hero-clips.js"
 ];
 
 const sourceHTML = await readFile(new URL("index.html", root), "utf8");
