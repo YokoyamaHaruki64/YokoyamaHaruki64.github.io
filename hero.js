@@ -21,12 +21,13 @@
     const work = works.get(entry?.workId);
     const customTitle = typeof entry?.title === "string" ? entry.title.trim() : "";
     const title = customTitle || work?.title;
-    const workVideo = work?.media?.type === "video" ? mediaURL(work.media.src) : "";
-    const youtube = work?.media?.type === "youtube" ? mediaURL(work.media.url) : "";
+    const media = Array.isArray(work?.media) ? work.media : [work?.media];
+    const workVideo = media.filter((item) => item?.type === "video").map((item) => mediaURL(item.src)).find(Boolean);
+    const youtube = media.some((item) => item?.type === "youtube" && mediaURL(item.url));
     return title ? [{
       title,
       workId: work?.id,
-      video: mediaURL(entry.video) || workVideo,
+      video: mediaURL(entry.video) || workVideo || "",
       thumbnail: mediaURL(entry.thumbnail) || mediaURL(work?.image) || placeholder,
       hasDetailVideo: Boolean(workVideo || youtube),
     }] : [];
