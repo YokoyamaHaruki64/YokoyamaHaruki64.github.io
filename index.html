@@ -17,10 +17,10 @@
     }, 6000);
   </script>
   <script src="theme.js?v=theme-20261014"></script>
-  <link rel="stylesheet" href="style.css?v=hero-full-bleed-20261122">
+  <link rel="stylesheet" href="style.css?v=work-dialog-navigation-20261126">
   <link rel="stylesheet" href="geometric.css?v=hero-mobile-bleed-20261122">
   <link rel="stylesheet" href="loading.css?v=loader-wave-tuning-20261123">
-  <script src="data/works.js?v=work-details-20261120" defer></script>
+  <script src="data/works.js?v=work-media-carousel-20261126" defer></script>
   <script src="data/hero-clips.js?v=hero-thumbnail-scroll-20261122" defer></script>
   <script src="data/skills.js" defer></script>
   <script src="data/about.js" defer></script>
@@ -30,8 +30,8 @@
   <script src="contact.js" defer></script>
   <script src="background.js" defer></script>
   <script src="work-details.js?v=detail-line-breaks-20261122" defer></script>
-  <script src="app.js?v=site-loader-20261123" defer></script>
-  <script src="hero.js?v=hero-thumbnail-scroll-20261122" defer></script>
+  <script src="app.js?v=work-dialog-navigation-20261126" defer></script>
+  <script src="hero.js?v=work-media-carousel-20261126" defer></script>
   <script src="loading.js?v=loader-wave-reveal-20261123" defer></script>
 </head>
 <body>
@@ -138,7 +138,23 @@
     <section class="section contact-section" id="contact" aria-labelledby="contact-title"><div class="wrap"><div class="section-heading reveal"><h2 id="contact-title">Contact</h2></div><div class="contact-content reveal" id="contact-content"><p>連絡先は準備中です。</p></div></div></section>
   </main>
   <footer class="site-footer wrap"><a class="back-top" href="#hero">トップへ <span aria-hidden="true">↑</span></a></footer>
-  <dialog id="work-dialog" class="work-dialog" aria-labelledby="dialog-title"><div class="dialog-toolbar"><span class="dialog-share-status" aria-live="polite"></span><button class="circle-button dialog-share" type="button" aria-label="作品リンクをコピー"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 13.5a4.5 4.5 0 0 0 6.36 0l3-3a4.5 4.5 0 0 0-6.36-6.36l-1.72 1.72"/><path d="M14 10.5a4.5 4.5 0 0 0-6.36 0l-3 3A4.5 4.5 0 0 0 11 19.86l1.72-1.72"/></svg></button><button class="circle-button dialog-close" aria-label="作品詳細を閉じる">×</button></div><div id="dialog-content" class="dialog-spread"></div></dialog>
+  <dialog id="work-dialog" class="work-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-toolbar">
+      <span class="dialog-share-status" aria-live="polite"></span>
+      <button class="circle-button dialog-share" type="button" aria-label="作品リンクをコピー"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 13.5a4.5 4.5 0 0 0 6.36 0l3-3a4.5 4.5 0 0 0-6.36-6.36l-1.72 1.72"/><path d="M14 10.5a4.5 4.5 0 0 0-6.36 0l-3 3A4.5 4.5 0 0 0 11 19.86l1.72-1.72"/></svg></button>
+      <button class="circle-button dialog-close" type="button" aria-label="作品詳細を閉じる">×</button>
+    </div>
+    <div id="dialog-content" class="dialog-spread"></div>
+    <div class="dialog-work-navigation" role="group" aria-label="作品の切り替え" hidden>
+      <button class="dialog-work-arrow dialog-work-arrow--previous" type="button" data-work-step="-1" aria-label="前の作品" aria-controls="dialog-content"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 6-6 6 6 6"/></svg></button>
+      <button class="dialog-work-arrow dialog-work-arrow--next" type="button" data-work-step="1" aria-label="次の作品" aria-controls="dialog-content"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 6 6 6-6 6"/></svg></button>
+      <span class="dialog-work-announcement" aria-live="polite"></span>
+    </div>
+  </dialog>
+  <dialog id="work-image-preview" class="work-image-preview" aria-label="作品画像の拡大表示">
+    <img alt="">
+    <button class="circle-button work-image-preview-close" type="button" aria-label="拡大表示を閉じる" autofocus>×</button>
+  </dialog>
   <!-- BUILD_WORK_DETAILS -->
 </body>
 </html>

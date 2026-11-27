@@ -25,6 +25,9 @@
   const worksGrid = document.querySelector("#works-grid");
   const dialog = document.querySelector("#work-dialog");
   const dialogContent = document.querySelector("#dialog-content");
+  const workNavigation = dialog.querySelector(".dialog-work-navigation");
+  const workAnnouncement = workNavigation.querySelector(".dialog-work-announcement");
+  const imagePreview = document.querySelector("#work-image-preview");
   let current = 0;
   let dialogClosing = false;
   let dialogOpener = null;
@@ -121,36 +124,135 @@
   }
 
   function workMedia(work) {
-    const media = work.media;
-    const imageURL = safeURL(work.image, true) || "assets/work-placeholder.svg";
-    const imageAlt = escapeHTML(work.imageAlt || (work.image ? work.title : "作品画像は準備中です"));
-    const title = escapeHTML(work.title);
-
-    if (media?.type === "video") {
-      const source = safeURL(media.src, true);
-      if (source) {
-        return { markup: `<video class="dialog-video" src="${escapeHTML(source)}" poster="${escapeHTML(imageURL)}" controls playsinline preload="metadata" aria-label="${title} の動画"></video>`, isVideo: true };
+    const cover = safeURL(work.image, true);
+    const coverAlt = work.imageAlt || work.title;
+    const entries = Array.isArray(work.media) ? work.media : [work.media];
+    const slides = entries.flatMap((entry) => {
+      const label = typeof entry?.label === "string" ? entry.label.trim() : "";
+      if (entry?.type === "youtube") {
+        const id = youtubeVideoId(entry.url);
+        return id ? [{ type: "youtube", id, label: label || "YouTube動画", youtubeURL: `https://www.youtube.com/watch?v=${id}` }] : [];
       }
-    }
 
-    if (media?.type === "youtube") {
-      const videoId = youtubeVideoId(media.url);
-      if (videoId) {
-        return {
-          markup: `<div class="dialog-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=0&controls=1&playsinline=1" title="${title} の動画" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`,
-          isVideo: true,
-          youtubeURL: `https://www.youtube.com/watch?v=${videoId}`
-        };
+      const src = safeURL(entry?.src, true);
+      if (!src) return [];
+      if (entry.type === "video") {
+        return [{ type: "video", src, label: label || "動画", poster: safeURL(entry.poster, true) || cover }];
       }
-    }
+      if (entry.type === "image") {
+        const alt = entry.alt || (src === cover ? coverAlt : label || `${work.title}の画像`);
+        return [{ type: "image", src, alt, label: label || "画像" }];
+      }
+      return [];
+    });
 
-    return { markup: `<img class="dialog-image" src="${escapeHTML(imageURL)}" alt="${imageAlt}" width="960" height="540">`, isVideo: false };
+    const alt = cover ? coverAlt : "作品画像は準備中です";
+    return slides.length ? slides : [{ type: "image", src: cover || "assets/work-placeholder.svg", alt, label: cover ? "作品画像" : alt, placeholder: !cover }];
   }
 
-  function hasPlayableMedia(work) {
-    if (work.media?.type === "video") return Boolean(safeURL(work.media.src, true));
-    if (work.media?.type === "youtube") return Boolean(youtubeVideoId(work.media.url));
-    return false;
+  function workMediaMarkup(media) {
+    if (media.type === "youtube") {
+      return `<div class="dialog-video-frame"><iframe src="https://www.youtube-nocookie.com/embed/${media.id}?autoplay=0&controls=1&playsinline=1" title="${escapeHTML(media.label)}" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
+    }
+    if (media.type === "video") {
+      const poster = media.poster ? ` poster="${escapeHTML(media.poster)}"` : "";
+      return `<video class="dialog-video" src="${escapeHTML(media.src)}"${poster} controls playsinline preload="metadata" aria-label="${escapeHTML(media.label)}"></video>`;
+    }
+    const image = `<img class="dialog-image" src="${escapeHTML(media.src)}" alt="${escapeHTML(media.alt)}" width="960" height="540">`;
+    if (media.placeholder) return image;
+    return `<button class="dialog-image-expand" type="button" aria-label="${escapeHTML(media.label)}を拡大" aria-haspopup="dialog">
+      ${image}<span class="dialog-image-expand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m11-5v5h-5"/></svg></span>
+    </button>`;
+  }
+
+  function setupWorkMedia(container, media) {
+    const first = media[0];
+    const hasControls = media.length > 1;
+    const visibleDots = Math.min(3, media.length);
+    const hasYoutube = media.some((item) => item.youtubeURL);
+    container.classList.toggle("dialog-media--wide", hasControls || first.type !== "image");
+    const arrow = (step, label) => `<button type="button" class="dialog-media-arrow" data-step="${step}" aria-label="${label}" aria-controls="dialog-media-stage"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="${step < 0 ? "m15 6-6 6 6 6" : "m9 6 6 6-6 6"}"/></svg></button>`;
+    container.innerHTML = `
+      <div id="dialog-media-stage" class="dialog-media-stage${hasControls ? " dialog-media-stage--carousel" : ""}"><div class="dialog-media-slide">${workMediaMarkup(first)}</div></div>
+      <div class="dialog-media-bar">
+        ${hasControls ? `<div class="dialog-media-controls" role="group" aria-label="作品メディアの切り替え">
+          ${arrow(-1, "前のメディア")}
+          <div class="dialog-media-dots" style="--media-visible-dots: ${visibleDots}">
+            <div class="dialog-media-dot-track">${media.map((item, index) => `<button type="button" class="dialog-media-dot" data-index="${index}" aria-label="${escapeHTML(item.label)}（${index + 1} / ${media.length}）" aria-controls="dialog-media-stage"></button>`).join("")}</div>
+            <span class="dialog-media-dot-indicator" aria-hidden="true"></span>
+          </div>
+          ${arrow(1, "次のメディア")}
+        </div>` : ""}
+        <span class="dialog-media-label">${escapeHTML(first.label)}</span>
+      </div>
+      ${hasControls ? '<p class="dialog-media-announcement" aria-live="polite"></p>' : ""}
+      ${hasYoutube ? `<p class="dialog-media-link"><a class="dialog-resource-link" target="_blank" rel="noopener noreferrer" ${first.youtubeURL ? `href="${first.youtubeURL}"` : "hidden"}>YouTubeで見る</a></p>` : ""}
+    `;
+    if (!hasControls) return;
+
+    const stage = container.querySelector(".dialog-media-stage");
+    const controls = container.querySelector(".dialog-media-controls");
+    const dotWindow = controls.querySelector(".dialog-media-dots");
+    const dots = [...dotWindow.querySelectorAll(".dialog-media-dot")];
+    const announcement = container.querySelector(".dialog-media-announcement");
+    const youtubeLink = container.querySelector(".dialog-media-link a");
+    const caption = container.querySelector(".dialog-media-label");
+    let index = 0;
+    let activeSlide = stage.firstElementChild;
+
+    function updateControls() {
+      // 先頭と末尾を除き、選択中のドットは中央に保ったまま前後のドットを送る。
+      const start = Math.max(0, Math.min(index - 1, media.length - visibleDots));
+      dotWindow.style.setProperty("--media-dot-start", start);
+      dotWindow.style.setProperty("--media-dot-slot", index - start);
+      dots.forEach((dot, position) => {
+        dot.inert = position < start || position >= start + visibleDots;
+        dot.setAttribute("aria-current", String(position === index));
+      });
+      caption.textContent = media[index].label;
+      if (youtubeLink) {
+        const url = media[index].youtubeURL;
+        youtubeLink.hidden = !url;
+        if (url) youtubeLink.href = url;
+      }
+    }
+    updateControls();
+
+    controls.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button || dialogClosing) return;
+      const step = Number(button.dataset.step || 0);
+      const next = step ? (index + step + media.length) % media.length : Number(button.dataset.index);
+      if (next === index) return;
+      const direction = step || Math.sign(next - index);
+      const outgoing = activeSlide;
+
+      // 切り替え中に次の入力が来ても、前回の退出スライドは残さない。
+      for (const slide of stage.children) {
+        if (slide !== outgoing) slide.remove();
+      }
+      outgoing.getAnimations().forEach((animation) => animation.cancel());
+      outgoing.inert = true;
+      outgoing.querySelector("video")?.pause();
+      activeSlide = document.createElement("div");
+      activeSlide.className = "dialog-media-slide";
+      activeSlide.innerHTML = workMediaMarkup(media[next]);
+      setupImages(activeSlide);
+      stage.append(activeSlide);
+
+      if (reducedMotion.matches) {
+        outgoing.remove();
+      } else {
+        const timing = { duration: 280, easing: "cubic-bezier(.22, .74, .3, 1)" };
+        outgoing.animate([{ transform: "translateX(0)" }, { transform: `translateX(${-100 * direction}%)` }], timing)
+          .addEventListener("finish", () => outgoing.remove(), { once: true });
+        activeSlide.animate([{ transform: `translateX(${100 * direction}%)` }, { transform: "translateX(0)" }], timing);
+      }
+
+      index = next;
+      updateControls();
+      announcement.textContent = dots[index].getAttribute("aria-label");
+    });
   }
 
   function cardAwardsMarkup(awards) {
@@ -172,7 +274,7 @@
     const title = escapeHTML(work.title);
     const category = work.category ? `<span class="work-category">${escapeHTML(work.category)}</span>` : "";
     const sample = work.isSample ? '<span class="work-card-sample">仮作品</span>' : "";
-    const media = hasPlayableMedia(work) ? '<span class="work-card-media">動画あり</span>' : "";
+    const media = workMedia(work).some((item) => item.type !== "image") ? '<span class="work-card-media">動画あり</span>' : "";
     const awards = cardAwardsMarkup(work.awards);
     const productionTag = typeof work.isTeam === "boolean"
       ? `<li class="work-card-tag work-card-tag--production work-card-tag--production-${work.isTeam ? "team" : "individual"}">${work.isTeam ? "チーム制作" : "個人制作"}</li>`
@@ -214,6 +316,7 @@
       image.addEventListener("error", () => {
         image.src = "assets/work-placeholder.svg";
         image.alt = "作品画像は準備中です";
+        image.closest(".dialog-image-expand")?.setAttribute("disabled", "");
       }, { once: true });
     });
   }
@@ -221,15 +324,32 @@
   function openDialog(event, updateURL = true) {
     if (dialog.open || !works.length) return;
     const work = works[current];
-    const detailsTemplate = document.getElementById(`work-details-${work.id}`);
     dialogOpener = event?.currentTarget ?? worksGrid.querySelector(`[data-work-index="${current}"]`) ?? document.activeElement;
     dialog.classList.toggle("is-pointer-open", event?.inputMode === "pointer");
-    clearTimeout(shareStatusTimer);
-    shareStatus.classList.remove("is-visible");
-    shareStatus.textContent = "";
     if (updateURL) {
       history.pushState({ ...(history.state ?? {}), portfolioWork: work.id }, "", workURL(work));
     }
+
+    workNavigation.hidden = works.length < 2;
+    workAnnouncement.textContent = "";
+    renderDialogWork();
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
+    document.body.classList.add("modal-open");
+    dialog.showModal();
+    dialogContent.scrollTop = 0;
+    void dialog.offsetWidth;
+    dialog.classList.add("is-open");
+    dialog.querySelector(".dialog-close").focus({ preventScroll: true });
+  }
+
+  function renderDialogWork() {
+    const work = works[current];
+    const detailsTemplate = document.getElementById(`work-details-${work.id}`);
+    clearTimeout(shareStatusTimer);
+    shareStatus.classList.remove("is-visible");
+    shareStatus.textContent = "";
+    dialogContent.querySelectorAll("video").forEach((video) => video.pause());
     const links = (work.links ?? []).filter((link) => safeURL(link.url));
     const downloads = (work.downloads ?? []).filter((item) => typeof item.url === "string" && item.url.trim() && safeURL(item.url, true));
     const awards = awardsMarkup(work.awards);
@@ -246,8 +366,7 @@
           <h2 id="dialog-title" class="dialog-title">${escapeHTML(work.title)}</h2>
           ${categoryTag(work)}
         </header>
-        <div class="dialog-media${media.isVideo ? " dialog-media--video" : ""}">${media.markup}</div>
-        ${media.youtubeURL ? `<p class="dialog-video-link"><a class="dialog-resource-link" href="${media.youtubeURL}" target="_blank" rel="noopener noreferrer">YouTubeで見る</a></p>` : ""}
+        <div class="dialog-media" role="group" aria-label="作品メディア"></div>
         <p class="dialog-summary">${escapeHTML(work.summary)}</p>
         <dl class="work-meta dialog-facts">
           <div class="dialog-fact--wide"><dt>担当</dt><dd>${escapeHTML(work.role)}</dd></div>
@@ -276,17 +395,26 @@
     } else if (detailsContainer) {
       detailsContainer.innerHTML = '<div class="dialog-block"><p role="status">作品の詳細を読み込み中です…</p></div>';
     }
+    setupWorkMedia(dialogContent.querySelector(".dialog-media"), media);
     setupImages(dialogContent);
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    document.body.style.paddingRight = `${scrollbarWidth}px`;
-    document.body.classList.add("modal-open");
-    dialog.showModal();
     dialogContent.scrollTop = 0;
-    void dialog.offsetWidth;
-    dialog.classList.add("is-open");
-    dialog.querySelector(".dialog-close").focus({ preventScroll: true });
     if (!detailsTemplate && detailsContainer) loadWorkDetails(work.detailsPath, detailsContainer);
   }
+
+  workNavigation.addEventListener("click", (event) => {
+    const button = event.target.closest(".dialog-work-arrow");
+    if (!button || dialogClosing || works.length < 2) return;
+    const next = (current + Number(button.dataset.workStep) + works.length) % works.length;
+    const state = history.state;
+    const work = works[next];
+
+    // 共有URLを現在の作品に合わせ、戻る操作ではモーダルを一度で閉じる。
+    const nextState = state?.portfolioWork === works[current].id ? { ...state, portfolioWork: work.id } : state;
+    history.replaceState(nextState, "", workURL(work));
+    current = next;
+    renderDialogWork();
+    workAnnouncement.textContent = work.title;
+  });
 
   function showWorkFromURL() {
     const requestedId = new URL(window.location.href).searchParams.get("work");
@@ -312,6 +440,7 @@
   function closeDialog(fromHistory = false) {
     if (dialogClosing || !dialog.open) return;
     dialogClosing = true;
+    if (imagePreview.open) imagePreview.close();
     dialog.classList.remove("is-open");
     dialogContent.querySelectorAll("video").forEach((video) => video.pause());
     dialogContent.querySelectorAll("iframe").forEach((frame) => frame.remove());
@@ -368,6 +497,7 @@
     const work = works[current];
     const url = workURL(work).href;
     const copied = await copyShareURL(url);
+    if (!dialog.open || dialogClosing || works[current] !== work) return;
     shareStatus.textContent = copied ? "リンクをコピーしました！" : "コピーに失敗しました";
     shareStatus.classList.add("is-visible");
     clearTimeout(shareStatusTimer);
@@ -377,12 +507,41 @@
   });
 
   let backdropPressed = false;
-  const outsideDialog = (event) => {
-    const bounds = dialog.getBoundingClientRect();
+  const outsideDialog = (event, target = dialog) => {
+    const bounds = target.getBoundingClientRect();
     return event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom;
   };
-  dialog.addEventListener("pointerdown", (event) => { backdropPressed = outsideDialog(event); });
-  dialog.addEventListener("click", (event) => { if (backdropPressed && outsideDialog(event)) closeDialog(); });
+  dialog.addEventListener("pointerdown", (event) => { backdropPressed = event.target === dialog && outsideDialog(event); });
+  dialog.addEventListener("click", (event) => {
+    if (backdropPressed && event.target === dialog && outsideDialog(event)) closeDialog();
+  });
+
+  const enlargedImage = imagePreview.querySelector("img");
+  let imageOpener = null;
+  let imageBackdropPressed = false;
+  dialogContent.addEventListener("click", (event) => {
+    const button = event.target.closest(".dialog-image-expand");
+    if (!button || imagePreview.open || dialogClosing) return;
+    const image = button.querySelector("img");
+    if (!image.naturalWidth || !image.naturalHeight) return;
+
+    imageOpener = button;
+    imageBackdropPressed = false;
+    imagePreview.style.setProperty("--zoom-image-ratio", image.naturalWidth / image.naturalHeight);
+    enlargedImage.src = image.currentSrc || image.src;
+    enlargedImage.alt = image.alt;
+    imagePreview.showModal();
+  });
+  imagePreview.querySelector("button").addEventListener("click", () => imagePreview.close());
+  imagePreview.addEventListener("pointerdown", (event) => { imageBackdropPressed = outsideDialog(event, imagePreview); });
+  imagePreview.addEventListener("click", (event) => {
+    if (imageBackdropPressed && outsideDialog(event, imagePreview)) imagePreview.close();
+  });
+  imagePreview.addEventListener("close", () => {
+    enlargedImage.removeAttribute("src");
+    imageOpener?.focus({ preventScroll: true });
+    imageOpener = null;
+  });
 
   function renderWorks() {
     worksGrid.innerHTML = works.length

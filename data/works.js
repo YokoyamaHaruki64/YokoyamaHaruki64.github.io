@@ -1,6 +1,9 @@
 // 配列に1件追加すると、作品一覧と詳細モーダルへ自動で反映されます。
-// image は一覧用画像。動画は media: { type: "video", src: "assets/work.mp4" } または media: { type: "youtube", url: "https://youtu.be/動画ID" } を任意で設定します。
-// 動画は詳細モーダル内で再生し、YouTubeは埋め込みプレーヤーと外部リンクを表示します。
+// image は一覧用画像。media は詳細モーダルに表示する順に並べた配列です。空なら一覧用画像を表示します。
+// YouTube: { type: "youtube", url: "https://youtu.be/動画ID" }
+// 動画: { type: "video", src: "assets/works/game.mp4", poster: "assets/works/game.jpg" }
+// 画像: { type: "image", src: "assets/works/screenshot.png", alt: "ゲーム画面の説明" }
+// 各項目に label、動画に poster、画像に alt を任意で指定できます。
 // links は { label, url } の配列です。
 // downloads は { label: "Windows版（ZIP）", url: "downloads/game.zip", filename: "game.zip" } の配列です。外部の配布URLも指定でき、filename は省略可能です。
 // awards は { competition: "大会名", result: "銀賞", medal: "silver", year: "2026" } の配列です。result と year は省略可能です。
@@ -17,7 +20,15 @@ window.PORTFOLIO_WORKS = [
     category: "2D Action",
     image: "assets/works/furisuru-title.png",
     imageAlt: "ゲーム「ふりするフリスル」のタイトル画面",
-    media: { type: "youtube", url: "https://youtu.be/Qo8GYWGb5pU" },
+    media: [
+      { type: "youtube", url: "https://youtu.be/k9iTbm3f8bg" , label: "紹介映像" },
+      { type: "image", src: "assets/works/furisuru-title.png", label: "タイトル画面" },
+      { type: "image", src: "assets/works/furisuru-play1.png", label: "ゲーム画面" },
+      { type: "image", src: "assets/works/furisuru-play2.png", label: "ゲーム画面" },
+      { type: "image", src: "assets/works/furisuru-play3.png", label: "ゲーム画面" },
+      { type: "image", src: "assets/works/furisuru-play4.png", label: "ゲーム画面" },
+      { type: "image", src: "assets/works/furisuru-play5.png", label: "ゲーム画面" },
+    ],
     isSample: false,
     isTeam: true,
     mainTools: ["C++", "DirectX 11"],
@@ -43,13 +54,18 @@ window.PORTFOLIO_WORKS = [
   },
   {
     id: "machina-drive",
-    index: 1,
+    index: 2,
     chronologicalIndex: 9,
     title: "Machina Drive",
     category: "3D Action",
     image: "assets/works/machinadrive-title.png",
     imageAlt: "ゲーム「Machina Drive」のタイトル画面",
-    media: { type: "youtube", url: "https://youtu.be/Tlb3Cqbm5iI" },
+    media: [
+      { type: "youtube", url: "https://youtu.be/Tlb3Cqbm5iI" , label: "紹介映像" },
+      { type: "image", src: "assets/works/machinadrive-title.png", label: "タイトル画面" },
+      { type: "image", src: "assets/works/machina-edit.png", label: "エディタ画面" },
+      { type: "image", src: "assets/works/machina-shader.png", label: "ShaderDSL" },
+    ],
     isSample: false,
     isTeam: false,
     mainTools: ["C++", "DirectX 11", "ImGui"],
@@ -79,13 +95,16 @@ window.PORTFOLIO_WORKS = [
   },
   {
     id: "rockrock-explosion",
-    index: 2,
+    index: 3,
     chronologicalIndex: 1,
     title: "RockRock☆Explosion!!",
     category: "3D Action",
     image: "assets/works/rockrockexplosion-title.png",
     imageAlt: "ゲーム「RockRock☆Explosion!!」のタイトル画面",
-    media: { type: "youtube", url: "https://youtu.be/jlnMevfWygQ" },
+    media: [
+      { type: "youtube", url: "https://youtu.be/jlnMevfWygQ" },
+      { type: "image", src: "assets/works/rockrockexplosion-title.png", label: "タイトル画面" },
+    ],
     isSample: false,
     isTeam: false,
     mainTools: ["Unity", "C#"],
@@ -110,13 +129,16 @@ window.PORTFOLIO_WORKS = [
   },
   {
     id: "full-burst",
-    index: 3,
+    index: 4,
     chronologicalIndex: 5,
     title: "Full Burst!!",
     category: "3D Action",
     image: "assets/works/fullburst-title.png",
     imageAlt: "ゲーム「Full Burst!!」のタイトル画面",
-    media: { type: "youtube", url: "https://youtu.be/xT1L_y-cCxM" },
+    media: [
+      { type: "youtube", url: "https://youtu.be/xT1L_y-cCxM" },
+      { type: "image", src: "assets/works/fullburst-title.png", label: "タイトル画面" },
+    ],
     isSample: false,
     isTeam: false,
     mainTools: ["C++", "DirectX11"],
@@ -146,13 +168,16 @@ window.PORTFOLIO_WORKS = [
   },
   {
     id: "accel-arc",
-    index: 4,
+    index: 5,
     chronologicalIndex: 3,
     title: "ACCEL ARC",
     category: "2D Action",
     image: "assets/works/accelarc-title.jpg",
     imageAlt: "ゲーム「ACCEL ARC」のタイトル画面",
-    media: { type: "youtube", url: "https://youtu.be/QXxv7N9SUy4" },
+    media: [
+      { type: "youtube", url: "https://youtu.be/QXxv7N9SUy4" },
+      { type: "image", src: "assets/works/accelarc-title.jpg", label: "タイトル画面" },
+    ],
     isSample: false,
     isTeam: false,
     mainTools: ["C++", "Nintendo Switch"],
@@ -173,13 +198,16 @@ window.PORTFOLIO_WORKS = [
   },
   {
     id: "nexustone",
-    index: 5,
+    index: 6,
     chronologicalIndex: 4,
     title: "NEXUSTONE",
     category: "2D Puzzle",
     image: "assets/works/nexustone-title.png",
     imageAlt: "ゲーム「NEXUSTONE」のタイトル画面",
-    media: { type: "youtube", url: "https://youtu.be/ndeyapUNn6s" },
+    media: [
+      { type: "youtube", url: "https://youtu.be/ndeyapUNn6s" },
+      { type: "image", src: "assets/works/nexustone-title.png", label: "タイトル画面" },
+    ],
     isSample: false,
     isTeam: false,
     mainTools: ["C++", "DirectX11"],
@@ -208,13 +236,16 @@ window.PORTFOLIO_WORKS = [
   },
   {
     id: "stronglongjump",
-    index: 6,
+    index: 7,
     chronologicalIndex: 8,
     title: "Strong Long Jump",
     category: "3D Minigame",
     image: "assets/works/stronglongjump-title.png",
     imageAlt: "ゲーム「Strong Long Jump」のタイトル画面",
-    media: { type: "youtube", url: "https://youtu.be/mQG01HcTHKE" },
+    media: [
+      { type: "youtube", url: "https://youtu.be/mQG01HcTHKE" },
+      { type: "image", src: "assets/works/stronglongjump-title.png", label: "タイトル画面" },
+    ],
     isSample: false,
     isTeam: false,
     mainTools: ["Unreal Engine"],
@@ -238,13 +269,16 @@ window.PORTFOLIO_WORKS = [
   },
   {
     id: "chronos-shot",
-    index: 7,
+    index: 8,
     chronologicalIndex: 0,
     title: "Chronos Shot",
     category: "2D Shooting",
     image: "assets/works/chronosshot-title.png",
     imageAlt: "ゲーム「Chronos Shot」のタイトル画面",
-    media: { type: "youtube", url: "https://youtu.be/mUPFRQt6iQw" },
+    media: [
+      { type: "youtube", url: "https://youtu.be/mUPFRQt6iQw" },
+      { type: "image", src: "assets/works/chronosshot-title.png", label: "タイトル画面" },
+    ],
     isSample: false,
     isTeam: false,
     mainTools: ["Unity"],
@@ -268,13 +302,16 @@ window.PORTFOLIO_WORKS = [
   },
     {
     id: "suisai-utopia",
-    index: 8,
+    index: 9,
     chronologicalIndex: 2,
     title: "水彩ユートピア",
     category: "2D Console Action",
     image: "assets/works/suisaiutopia-title.png",
     imageAlt: "ゲーム「水彩ユートピア」のタイトル画面",
-    media: { type: "youtube", url: "https://youtu.be/pTQIeBc07bI" },
+    media: [
+      { type: "youtube", url: "https://youtu.be/pTQIeBc07bI" },
+      { type: "image", src: "assets/works/suisaiutopia-title.png", label: "タイトル画面" },
+    ],
     isSample: false,
     isTeam: false,
     mainTools: ["C++"],
@@ -299,14 +336,21 @@ window.PORTFOLIO_WORKS = [
   },
   {
     id: "project-hestia",
-    index: 9,
+    index: 1,
     chronologicalIndex: 10,
     title: "Project Hestia",
     category: "Game Engine",
+    image: "assets/works/hestia-demo-cube.png",
+    imageAlt: "Project Hestiaのデモ画面",
+    media: [
+      { type: "image", src: "assets/works/hestia-demo-cube.png", label: "10万キューブのデモ画面" },
+      { type: "image", src: "assets/works/hestia-demo-field.png", label: "フィールドのデモ画面" },
+    ],
     isSample: false,
     isTeam: false,
     mainTools: ["C++23", "DirectX 12"],
-    summary: "C++23とDirectX 12で開発中の自作ゲームエンジン。エンジン内部はArchetype型ECS、ゲーム側はScriptで書ける2層構成で、大量のオブジェクトを高速に処理することを目指しています。",
+    tagline: "自作ゲームエンジン",
+    summary: "C++23とDirectX 12で開発中の自作ゲームエンジン。エンジン内部はArchetype型ECS、ゲーム側はScriptで書ける2層構成で、ランタイムの高速化と開発のしやすさの両立を目指しています。",
     role: "エンジンの設計・実装",
     technologies: ["C++23", "DirectX 12"],
     period: { duration: "開発中", timing: "2026年9月〜" },
